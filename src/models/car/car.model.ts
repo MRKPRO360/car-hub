@@ -60,6 +60,12 @@ const carSchema = new mongoose.Schema<ICar>(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        delete ret.isDeleted; // removes isDelete from json output :)
+      },
+    },
   }
 );
 
