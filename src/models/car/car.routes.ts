@@ -15,3 +15,5 @@ router
   .get(carControllers.getACar)
   .put(carControllers.updateACar)
   .delete(carControllers.deleteACar);
+
+export default router;

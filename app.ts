@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from 'express';
+import carRouter from './src/models/car/car.routes';
 
 const app: Application = express();
 
@@ -6,6 +7,7 @@ const app: Application = express();
 app.use(express.json());
 
 // ROUTER
+app.use('/api/cars', carRouter);
 
 // HELLO RESPONSE
 app.get('/', (req: Request, res: Response) => {
