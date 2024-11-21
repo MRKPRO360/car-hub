@@ -6,10 +6,12 @@ const carSchema = new mongoose.Schema<ICar>(
     brand: {
       type: String,
       required: [true, 'A car must have a name!'],
+      trim: true,
     },
     model: {
       type: String,
       required: [true, 'A car must have a model name!'],
+      trim: true,
     },
     year: {
       type: Number,
@@ -21,6 +23,7 @@ const carSchema = new mongoose.Schema<ICar>(
     },
     category: {
       type: String,
+      trim: true,
       enum: {
         values: ['Sedan', 'SUV', 'Truck', 'Coupe', 'Convertible'],
         message: '{VALUE} is not appropriate!',
@@ -29,6 +32,7 @@ const carSchema = new mongoose.Schema<ICar>(
     description: {
       type: String,
       required: [true, 'A car should have some description!'],
+      trim: true,
     },
     quantity: {
       type: Number,
@@ -58,6 +62,13 @@ const carSchema = new mongoose.Schema<ICar>(
     timestamps: true,
   }
 );
+
+// PRE SAVE MIDDLEWARE
+carSchema.pre('save', function (next) {
+  //NOTE: cheking if the quantity is less than 0 the inStcok field will be false otherwise true
+  if (this.quantity <= 0) this.inStock = false;
+  next();
+});
 
 const Car = mongoose.model<ICar>('Car', carSchema);
 

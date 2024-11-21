@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { carServices } from './car.services';
+import carValidationSchema from './car.validation';
 
 const getAllCars = () => {};
 
@@ -8,7 +9,8 @@ const getACar = () => {};
 const createACar = async (req: Request, res: Response) => {
   try {
     const { car } = req.body;
-    const result = await carServices.creatACarInDB(car);
+    const validatedData = carValidationSchema.parse(car);
+    const result = await carServices.creatACarInDB(validatedData);
 
     res.status(201).json({
       message: 'Car created successfully!',
@@ -21,6 +23,7 @@ const createACar = async (req: Request, res: Response) => {
       message: 'Validation failed!',
       success: false,
       error: err,
+      //   stack: err.stackTrack
     });
   }
 };
