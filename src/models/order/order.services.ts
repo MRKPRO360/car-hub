@@ -73,8 +73,14 @@ const claculateRevenueFromDB = async () => {
   ]).exec();
 };
 
+const getOrderWithCarFromDB = async () => {
+  //NOTE: Fetch an order with the associated car details
+  return await Order.find().populate('car');
+};
+
 export const orderServices = {
   getAllOrdersFromDB,
   createOrderInDB,
   claculateRevenueFromDB,
+  getOrderWithCarFromDB,
 };

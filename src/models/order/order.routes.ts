@@ -10,4 +10,6 @@ router
 
 router.route('/revenue').get(orderControllers.claculateRevenue);
 
+router.route('/orderWithCar').get(orderControllers.getAllOrdersWithCar);
+
 export default router;
