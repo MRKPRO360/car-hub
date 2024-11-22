@@ -15,8 +15,7 @@ const orderSchema = new mongoose.Schema<IOrder>(
       },
     },
     car: {
-      // type: mongoose.Schema.Types.ObjectId,
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Car', // Referrencing Car model
       required: [true, 'Car object id is required!'],
     },

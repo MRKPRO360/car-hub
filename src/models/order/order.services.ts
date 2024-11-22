@@ -30,7 +30,51 @@ const createOrderInDB = async (orderData: IOrder) => {
   return await Order.create(orderData);
 };
 
+const claculateRevenueFromDB = async () => {
+  return await Order.aggregate([
+    // FINDING CARS FROM CARS COLLECTION
+    {
+      $lookup: {
+        from: 'cars',
+        localField: 'car',
+        foreignField: '_id',
+        as: 'carDetails',
+      },
+    },
+    // FLATTENING CARS ARRAY
+
+    {
+      $unwind: '$carDetails',
+    },
+
+    //  CALCULATING PRICE BY QUANTITY FOR EACH CAR
+    {
+      $addFields: {
+        carPriceByQt: {
+          $multiply: ['$carDetails.quantity', '$carDetails.price'],
+        },
+      },
+    },
+
+    // GROUPING ALL DOCUMENTS
+    {
+      $group: {
+        _id: null,
+        // CALCULATING TOTAL REVENUE
+        totalRevenue: { $sum: '$carPriceByQt' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        totalRevenue: 1,
+      },
+    },
+  ]).exec();
+};
+
 export const orderServices = {
   getAllOrdersFromDB,
   createOrderInDB,
+  claculateRevenueFromDB,
 };

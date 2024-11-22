@@ -15,9 +15,10 @@ import { orderZodSchema } from './order.validation';
 
 const createOrder = async (req: Request, res: Response) => {
   try {
-    const validatedData = orderZodSchema.parse(req.body);
+    // FIXME:
+    // const validatedData = orderZodSchema.parse(req.body);
 
-    const result = await orderServices.createOrderInDB(validatedData);
+    const result = await orderServices.createOrderInDB(req.body);
 
     res.status(201).json({
       message: 'Order created successfully!',
@@ -52,7 +53,28 @@ const getAllOrders = async (req: Request, res: Response) => {
   }
 };
 
+const claculateRevenue = async (req: Request, res: Response) => {
+  try {
+    const result = await orderServices.claculateRevenueFromDB();
+
+    res.status(200).json({
+      message: 'Revenue calculated successfully!',
+      status: true,
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      message: 'Something went wrong!',
+      success: false,
+      error: err,
+      stack: err.stack,
+    });
+  }
+};
+
 export const orderControllers = {
   getAllOrders,
   createOrder,
+  claculateRevenue,
 };

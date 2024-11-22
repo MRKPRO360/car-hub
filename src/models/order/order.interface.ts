@@ -1,10 +1,9 @@
-// import { Types } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 //FIXME: NOT WORKING WHEN GIVING car TYPE OBJECTID
-export interface IOrder {
+export interface IOrder extends Document {
   email: string;
   // FOR ADDING MONGOOSE ID TYPE
-  // car: Types.ObjectId;
-  car: string;
+  car: mongoose.Types.ObjectId;
   quantity: number;
   totalPrice: number;
   createdAt?: Date;

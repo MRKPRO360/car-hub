@@ -8,4 +8,6 @@ router
   .get(orderControllers.getAllOrders)
   .post(orderControllers.createOrder);
 
+router.route('/revenue').get(orderControllers.claculateRevenue);
+
 export default router;
