@@ -23,7 +23,14 @@ const updateACarInDB = async (id: string, updatedVal: ICar) => {
   );
 };
 
-const deleteACarFromDB = (id: string) => {};
+const deleteACarFromDB = async (id: string) => {
+  return await Car.findByIdAndUpdate(
+    id,
+    { $set: { isDeleted: true } },
+    // Return updated document and run validtators);
+    { new: true, runValidators: true, context: 'query ' }
+  );
+};
 
 export const carServices = {
   creatACarInDB,

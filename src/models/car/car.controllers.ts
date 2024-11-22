@@ -88,7 +88,29 @@ const updateACar = async (req: Request, res: Response) => {
   }
 };
 
-const deleteACar = () => {};
+const deleteACar = async (req: Request, res: Response) => {
+  try {
+    const { carId } = req.params;
+    const result = await carServices.deleteACarFromDB(carId);
+
+    // SEND RESPONSE IF THE CAR IS NOT FOUND ON DB
+    if (!result) throw new Error("This car doesn't exist on database 💥");
+
+    // STATUS CODE SHOULD BE 204 BUT PUT 200 FOR ASSIGNMENT INSTRUCTION
+    res.status(200).json({
+      message: 'Car deleted successfully!',
+      success: true,
+      data: {},
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      message: 'Car deletion failed!',
+      success: false,
+      error: err,
+      stack: err.stack,
+    });
+  }
+};
 
 export const carControllers = {
   getAllCars,

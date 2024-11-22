@@ -76,6 +76,13 @@ carSchema.pre('save', function (next) {
   next();
 });
 
+// PRE FIND MIDDLEWARE
+carSchema.pre('find', function (next) {
+  //NOTE: filtering the documents that are not deleted
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
 const Car = mongoose.model<ICar>('Car', carSchema);
 
 export default Car;
