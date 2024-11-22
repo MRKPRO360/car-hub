@@ -5,7 +5,7 @@ const carSchema = new mongoose.Schema<ICar>(
   {
     brand: {
       type: String,
-      required: [true, 'A car must have a name!'],
+      required: [true, 'A car must have a brand name!'],
       trim: true,
     },
     model: {

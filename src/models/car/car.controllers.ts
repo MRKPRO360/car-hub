@@ -12,13 +12,12 @@ const getAllCars = async (req: Request, res: Response) => {
       success: true,
       data: result,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
     res.status(404).json({
       message: 'Something went wrong!',
       success: false,
       error: err,
-      //   stack: err.stackTrack
+      stack: err.stack,
     });
   }
 };
@@ -26,7 +25,6 @@ const getAllCars = async (req: Request, res: Response) => {
 const getACar = async (req: Request, res: Response) => {
   try {
     const { carId } = req.params;
-    console.log(carId);
 
     const result = await carServices.getACarFromDB(carId);
 
@@ -35,13 +33,12 @@ const getACar = async (req: Request, res: Response) => {
       success: true,
       data: result,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
     res.status(404).json({
       message: 'Something went wrong!',
       success: false,
       error: err,
-      //   stack: err.stackTrack
+      stack: err.stack,
     });
   }
 };
@@ -57,18 +54,39 @@ const createACar = async (req: Request, res: Response) => {
       success: true,
       data: result,
     });
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
     res.status(400).json({
       message: 'Validation failed!',
       success: false,
       error: err,
-      //   stack: err.stackTrack
+      stack: err.stack,
     });
   }
 };
 
-const updateACar = () => {};
+const updateACar = async (req: Request, res: Response) => {
+  try {
+    const updatedVal = req.body;
+    const { carId } = req.params;
+    const result = await carServices.updateACarInDB(carId, updatedVal);
+
+    // SEND RESPONSE IF THE CAR IS NOT FOUND ON DB
+    if (!result) throw new Error("This car doesn't exist on database 💥");
+
+    res.status(201).json({
+      message: 'Car updated successfully!',
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      message: 'Car updating failed!',
+      success: false,
+      error: err,
+      stack: err.stack,
+    });
+  }
+};
 
 const deleteACar = () => {};
 

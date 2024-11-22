@@ -13,7 +13,15 @@ const creatACarInDB = async (carData: ICar) => {
   return await Car.create(carData);
 };
 
-const updateACarFromDB = (id: string) => {};
+const updateACarInDB = async (id: string, updatedVal: ICar) => {
+  //FIXME: VALIDATION IS NOT WORKING
+  return await Car.findByIdAndUpdate(
+    id,
+    { $set: updatedVal },
+    // Return updated document and run validtators);
+    { new: true, runValidators: true, context: 'query ' }
+  );
+};
 
 const deleteACarFromDB = (id: string) => {};
 
@@ -21,6 +29,6 @@ export const carServices = {
   creatACarInDB,
   getAllCarsFromDB,
   getACarFromDB,
-  updateACarFromDB,
+  updateACarInDB,
   deleteACarFromDB,
 };
