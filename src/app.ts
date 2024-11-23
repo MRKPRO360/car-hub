@@ -1,6 +1,6 @@
 import express, { Application, Request, Response } from 'express';
-import carRouter from './src/models/car/car.routes';
-import orderRouter from './src/models/order/order.routes';
+import carRouter from '../src/models/car/car.routes';
+import orderRouter from '../src/models/order/order.routes';
 import cors from 'cors';
 import morgan from 'morgan';
 

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import app from './app';
-import config from './src/app/index';
+import config from '../src/app/index';
 
 const DB = config.database_url?.replace(
   '<db_password>',

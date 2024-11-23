@@ -28,9 +28,9 @@ This API allows users to manage orders for cars in an inventory system. Users ca
 
 ## Demo
 
-![App Screenshot](https://via.placeholder.com/800x400)
+![App Screenshot](https://i.ibb.co.com/85NL94n/38028744-e6ca-4b6e-8f18-6211ddd00a7e.webp)
 
-👉 [Live Demo](https://example.com)
+👉 [Live Demo](https://car-project-one.vercel.app/)
 
 ## Tech Stack
 
