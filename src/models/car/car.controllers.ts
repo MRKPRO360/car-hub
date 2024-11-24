@@ -1,4 +1,4 @@
-import { Request, response, Response } from 'express';
+import { Request, Response } from 'express';
 import { carServices } from './car.services';
 import carValidationSchema from './car.validation';
 

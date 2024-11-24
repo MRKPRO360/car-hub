@@ -11,13 +11,14 @@ A modern API built with [Node.js](https://nodejs.org/), [express.js](https://exp
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
+- [Notes](#notes)
 - [License](#license)
 
 ## About The Project
 
 This API allows users to manage orders for cars in an inventory system. Users can create orders, manage inventory, and calculate revenue generated from orders.
 
-## 🚀 Features
+## Features
 
 ✅ Place an order for a car.
 ✅ Validate input data (e.g., email, car ID, quantity).
@@ -28,7 +29,7 @@ This API allows users to manage orders for cars in an inventory system. Users ca
 
 ## Demo
 
-![App Screenshot](https://i.ibb.co.com/85NL94n/38028744-e6ca-4b6e-8f18-6211ddd00a7e.webp)
+![App Screenshot](https://i.ibb.co.com/7n3zFm3/20ec75c7-1d75-4112-9b23-c576f4bba62f.webp)
 
 👉 [Live Demo](https://car-project-one.vercel.app/)
 
@@ -73,14 +74,14 @@ PORT=3000
 Run the development server:
 
 ```
-npm run dev
+npm run start:dev
 ```
 
 ### For production:
 
 ```
 npm run build
-npm start
+npm run start:prod
 ```
 
 The API will be available at <span style="background-color:rgb(72, 72, 72);">http://localhost:3000`</span>
@@ -475,7 +476,11 @@ Uses MongoDB's aggregation pipeline to calculate total revenue:
 4. Push to the branch: <span style="background-color: "rgb(44, 44, 44)">git push origin feature-name</span> .
 5. Open a pull request.
 
-## Usage
+## Notes
+
+All requests and responses use JSON format.
+Replace http://localhost:5000/api/cars or http://localhost:5000/api/orders with the vercel deployed link to consume it.
+Authentication and authorization mechanisms can be integrated if needed in the future.
 
 ## License
 
