@@ -1,8 +1,9 @@
-import express, { Application, Request, Response } from 'express';
-import carRouter from '../src/models/car/car.routes';
-import orderRouter from '../src/models/order/order.routes';
-import cors from 'cors';
-import morgan from 'morgan';
+import express, { Application, Request, Response } from "express";
+import carRouter from "./app/modules/car/car.routes";
+import orderRouter from "./app/modules/order/order.routes";
+import cors from "cors";
+import morgan from "morgan";
+import router from "./routes";
 
 const app: Application = express();
 
@@ -10,17 +11,16 @@ const app: Application = express();
 app.use(cors());
 
 // 3rd PARTY MIDDLEWARE
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
 // BODY PARSER
 app.use(express.json());
 
 // ROUTER
-app.use('/api/cars', carRouter);
-app.use('/api/orders', orderRouter);
+app.use("/api/v1", router);
 
 // HELLO RESPONSE
-app.get('/', (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Hello World! 👋' });
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({ message: "Hello World! 👋" });
 });
 export default app;
