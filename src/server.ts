@@ -1,9 +1,9 @@
-import mongoose from 'mongoose';
-import app from './app';
-import config from '../src/app/index';
+import mongoose from "mongoose";
+import app from "./app";
+import config from "./app/config/index";
 
 const DB = config.database_url?.replace(
-  '<db_password>',
+  "<db_password>",
   config.database_password as string
 );
 
@@ -12,7 +12,7 @@ const connectDB = async () => {
     await mongoose.connect(DB as string);
 
     app.listen(config.port, () => {
-      console.log(`App is running on ${config.port}`);
+      console.log(`App is running on PORT 🏃‍♂️‍➡️ ❤️ ${config.port}`);
     });
   } catch (err: any) {
     console.error(`Erorr: ${err.message}`);
