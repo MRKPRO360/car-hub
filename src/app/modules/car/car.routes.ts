@@ -1,5 +1,7 @@
 import express from 'express';
 import { carControllers } from './car.controllers';
+import validateRequest from '../../middlewares/validateRequest';
+import { carValidationSchema } from './car.validation';
 
 const router = express.Router();
 
@@ -7,13 +9,19 @@ const router = express.Router();
 router
   .route('/')
   .get(carControllers.getAllCars)
-  .post(carControllers.createACar);
+  .post(
+    validateRequest(carValidationSchema.createCarValidationSchema),
+    carControllers.createACar
+  );
 
 // FOR SINGLE CAR
 router
   .route('/:carId')
   .get(carControllers.getACar)
-  .put(carControllers.updateACar)
+  .put(
+    validateRequest(carValidationSchema.updateCarValidationSchema),
+    carControllers.updateACar
+  )
   .delete(carControllers.deleteACar);
 
 export default router;
