@@ -11,8 +11,8 @@ const getAllCarsFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .fields();
 
-  const result = await carsQuery.modelQuery;
   const meta = await carsQuery.countTotal();
+  const result = await carsQuery.modelQuery;
 
   return {
     meta,
