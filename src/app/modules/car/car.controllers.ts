@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { carServices } from './car.services';
-import carValidationSchema from './car.validation';
 
 const getAllCars = async (req: Request, res: Response) => {
   try {
@@ -45,9 +44,7 @@ const getACar = async (req: Request, res: Response) => {
 
 const createACar = async (req: Request, res: Response) => {
   try {
-    const { car } = req.body;
-    const validatedData = carValidationSchema.parse(car);
-    const result = await carServices.creatACarInDB(validatedData);
+    const result = await carServices.creatACarInDB(req.body);
 
     res.status(201).json({
       message: 'Car created successfully!',

@@ -9,8 +9,8 @@ const getACarFromDB = async (id: string) => {
   return await Car.findById(id);
 };
 
-const creatACarInDB = async (carData: ICar) => {
-  return await Car.create(carData);
+const creatACarInDB = async (payload: ICar) => {
+  return await Car.create(payload);
 };
 
 const updateACarInDB = async (id: string, updatedVal: ICar) => {
