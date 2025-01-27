@@ -28,12 +28,30 @@ class QueryBuilder<T> {
   filter() {
     const queryObj = { ...this.query };
 
+    const inStockValue = queryObj.inStock;
+    if (typeof inStockValue === 'string') {
+      if (inStockValue.toLowerCase() === 'true') {
+        queryObj.inStock = true;
+      } else if (inStockValue.toLowerCase() === 'false') {
+        queryObj.inStock = false;
+      } else {
+        delete queryObj.inStock; // Remove invalid boolean values
+      }
+    }
+
     // Filtering
     const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
 
     excludeFields.forEach((el) => delete queryObj[el]);
 
-    this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
+    let queryStr = JSON.stringify(queryObj);
+
+    // ADVANCED FILTERING
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    this.modelQuery = this.modelQuery.find(
+      JSON.parse(queryStr) as FilterQuery<T>
+    );
 
     return this;
   }
