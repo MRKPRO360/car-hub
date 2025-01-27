@@ -1,8 +1,23 @@
+import QueryBuilder from '../../builder/QueryBuilder';
+import { carSearchableFileds } from './car.constant';
 import { ICar } from './car.interface';
 import Car from './car.model';
 
-const getAllCarsFromDB = async () => {
-  return await Car.find();
+const getAllCarsFromDB = async (query: Record<string, unknown>) => {
+  const carsQuery = new QueryBuilder(Car.find(), query)
+    .search(carSearchableFileds)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await carsQuery.modelQuery;
+  const meta = await carsQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 const getACarFromDB = async (id: string) => {
@@ -10,11 +25,12 @@ const getACarFromDB = async (id: string) => {
 };
 
 const creatACarInDB = async (payload: ICar) => {
+  //APPLY THIS LOGIC
+  // IF CAR BRAND AND NAME IS EXISTS AND USER WANTS TO ADD ANOTHER CAR THEN SHOW AN ERROR OR ADD THE STOCK
   return await Car.create(payload);
 };
 
 const updateACarInDB = async (id: string, updatedVal: ICar) => {
-  //FIXME: VALIDATION IS NOT WORKING
   return await Car.findByIdAndUpdate(
     id,
     { $set: updatedVal },

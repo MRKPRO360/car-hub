@@ -3,13 +3,15 @@ import { carServices } from './car.services';
 
 const getAllCars = async (req: Request, res: Response) => {
   try {
-    const result = await carServices.getAllCarsFromDB();
+    const { query } = req;
+
+    const result = await carServices.getAllCarsFromDB(query);
 
     res.status(200).json({
       message: 'Car retrieved successfully!',
-      cars: result.length,
       success: true,
-      data: result,
+      meta: result.meta,
+      data: result.result,
     });
   } catch (err: any) {
     res.status(404).json({
