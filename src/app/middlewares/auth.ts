@@ -8,7 +8,8 @@ import User from '../modules/user/user.model';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 const auth = (...requiredRoles: IUserRoles[]) => {
   return catchAsync(async (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+    console.log('inside auth');
+    const token = req.headers.authorization;
 
     // CHECK IF THE TOKEN IS EXISTS
     if (!token) throw new AppError(403, 'You are not authorized!');
@@ -30,8 +31,6 @@ const auth = (...requiredRoles: IUserRoles[]) => {
     }
 
     const { role, email } = decoded;
-    console.log(decoded);
-
     //CHECK IF THE USER IS EXISTS
     const user = await User.isUserExistsByEmail(email);
 

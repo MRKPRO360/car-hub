@@ -2,11 +2,10 @@ import { Request, Response } from 'express';
 import catchAsync from '../../../utils/catchAsync';
 import { UserServices } from './user.services';
 import sendResponse from '../../../utils/sendResponse';
+import { JwtPayload } from 'jsonwebtoken';
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  // console.log(req.user);
-
-  const result = await UserServices.getAllUsersFromDB();
+  const result = await UserServices.getAllUsersFromDB(req.user as JwtPayload);
 
   sendResponse(res, {
     success: true,
