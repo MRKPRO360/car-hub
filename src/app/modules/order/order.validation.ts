@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { z } from 'zod';
+import orderStatus from './order.constant';
 
 // Zod schema for validating ObjectId
 const objectIdSchema = z
@@ -26,6 +27,7 @@ const createOrderValidationSchema = z.object({
     .number()
     .min(0, 'Total price cannot be negative!')
     .nonnegative('Quantity can not be negative!'),
+  status: z.enum([...orderStatus] as [string, ...string[]]),
 });
 
 export const orderValidationsSchema = {

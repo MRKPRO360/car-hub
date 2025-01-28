@@ -31,8 +31,7 @@ const getACar = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createACar = catchAsync(async (req: Request, res: Response) => {
-  const result = await carServices.creatACarInDB(req.body);
-
+  const result = await carServices.creatACarInDB(req.file, req.body);
   sendResponse(res, {
     statusCode: 200,
     success: true,

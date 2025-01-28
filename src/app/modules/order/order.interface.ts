@@ -5,6 +5,7 @@ export interface IOrder extends Document {
   car: mongoose.Types.ObjectId;
   quantity: number;
   totalPrice: number;
+  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
   createdAt?: Date;
   updatedAt?: Date;
 }

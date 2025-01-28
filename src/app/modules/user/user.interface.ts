@@ -14,6 +14,7 @@ export interface IUser {
   isBlocked?: boolean;
   isDeleted?: boolean;
   isPasswordChangedAt?: boolean;
+  profileImg?: string;
 }
 
 export interface UserModel extends Model<IUser> {

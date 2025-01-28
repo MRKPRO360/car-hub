@@ -10,4 +10,5 @@ export interface ICar {
   createdAt?: Date;
   updatedAt?: Date;
   isDeleted?: boolean;
+  img?: string;
 }

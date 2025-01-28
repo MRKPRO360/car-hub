@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { IOrder } from './order.interface';
+import orderStatus from './order.constant';
 
 const orderSchema = new mongoose.Schema<IOrder>(
   {
@@ -28,6 +29,11 @@ const orderSchema = new mongoose.Schema<IOrder>(
       type: Number,
       required: [true, 'Total price is required!'],
       min: [0, 'Total price cannot be negative!'],
+    },
+    status: {
+      type: String,
+      enum: orderStatus,
+      default: 'PENDING',
     },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },

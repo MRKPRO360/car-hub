@@ -21,6 +21,10 @@ const carSchema = new mongoose.Schema<ICar>(
       type: Number,
       required: [true, 'A car must have price!'],
     },
+
+    img: {
+      type: String,
+    },
     category: {
       type: String,
       trim: true,

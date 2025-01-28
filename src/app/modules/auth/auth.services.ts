@@ -7,13 +7,13 @@ import createToken from './auth.utils';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-const registerUserInDB = async (payload: IUser) => {
+const registerUserInDB = async (file: any, payload: IUser) => {
   // CHECK IF USER EXISTS
   const userExists = await User.isUserExistsByEmail(payload.email);
 
   if (userExists) throw new AppError(400, 'User already registered!');
 
-  return await User.create(payload);
+  return await User.create({ profileImg: file.path, ...payload });
 };
 
 const loginUserFromDB = async (payload: ILogin) => {
@@ -92,8 +92,6 @@ const changePasswordInDB = async (
   userData: JwtPayload,
   payload: { oldPassword: string; newPassword: string }
 ) => {
-  console.log(userData);
-
   const { email } = userData;
 
   // CHECK IF USER EXISTS

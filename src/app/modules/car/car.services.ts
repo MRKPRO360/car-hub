@@ -24,10 +24,11 @@ const getACarFromDB = async (id: string) => {
   return await Car.findById(id);
 };
 
-const creatACarInDB = async (payload: ICar) => {
+const creatACarInDB = async (file: any, payload: ICar) => {
   //APPLY THIS LOGIC
   // IF CAR BRAND AND NAME IS EXISTS AND USER WANTS TO ADD ANOTHER CAR THEN SHOW AN ERROR OR ADD THE STOCK
-  return await Car.create(payload);
+
+  return await Car.create({ img: file.path, ...payload });
 };
 
 const updateACarInDB = async (id: string, updatedVal: ICar) => {

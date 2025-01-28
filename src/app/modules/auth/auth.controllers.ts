@@ -5,17 +5,13 @@ import config from '../../config';
 import { authServices } from './auth.services';
 
 const registerUser = catchAsync(async (req, res) => {
-  const result = await authServices.registerUserInDB(req.body);
+  const result = await authServices.registerUserInDB(req.file, req.body);
 
   sendResponse(res, {
     success: true,
     statusCode: 201,
     message: 'User registered successfully!',
-    data: {
-      _id: result?._id,
-      name: result?.name,
-      email: result?.email,
-    },
+    data: result,
   });
 });
 
