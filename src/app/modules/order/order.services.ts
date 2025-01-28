@@ -1,9 +1,9 @@
-import Car from "../car/car.model";
-import { IOrder } from "./order.interface";
-import Order from "./order.model";
+import Car from '../car/car.model';
+import { IOrder } from './order.interface';
+import Order from './order.model';
 
 const getAllOrdersFromDB = async () => {
-  return await Order.find();
+  return await Order.find().populate('car');
 };
 
 const createOrderInDB = async (orderData: IOrder) => {
@@ -11,16 +11,16 @@ const createOrderInDB = async (orderData: IOrder) => {
 
   // RETURN ERROR IF NO CAR EXISTS
   if (!car) {
-    throw new Error("Car not found!");
+    throw new Error('Car not found!');
   }
 
   // CHECK IF THE CAR IS DELETED
 
-  if (car.isDeleted) throw new Error("You can not order a deleted car!");
+  if (car.isDeleted) throw new Error('You can not order a deleted car!');
 
   // CHECK IF THE CAR QUANTITY IS AVAILABLE
   if (car.quantity < orderData.quantity)
-    throw new Error("Insufficinet stock for this car!");
+    throw new Error('Insufficinet stock for this car!');
 
   // REDUCING CAR QUANTITY
   car.quantity -= orderData.quantity;
@@ -35,23 +35,23 @@ const claculateRevenueFromDB = async () => {
     // FINDING CARS FROM CARS COLLECTION
     {
       $lookup: {
-        from: "cars",
-        localField: "car",
-        foreignField: "_id",
-        as: "carDetails",
+        from: 'cars',
+        localField: 'car',
+        foreignField: '_id',
+        as: 'carDetails',
       },
     },
     // FLATTENING CARS ARRAY
 
     {
-      $unwind: "$carDetails",
+      $unwind: '$carDetails',
     },
 
     //  CALCULATING PRICE BY QUANTITY FOR EACH CAR
     {
       $addFields: {
         carPriceByQt: {
-          $multiply: ["$carDetails.quantity", "$carDetails.price"],
+          $multiply: ['$carDetails.quantity', '$carDetails.price'],
         },
       },
     },
@@ -61,7 +61,7 @@ const claculateRevenueFromDB = async () => {
       $group: {
         _id: null,
         // CALCULATING TOTAL REVENUE
-        totalRevenue: { $sum: "$carPriceByQt" },
+        totalRevenue: { $sum: '$carPriceByQt' },
       },
     },
     {
@@ -73,14 +73,8 @@ const claculateRevenueFromDB = async () => {
   ]).exec();
 };
 
-const getOrderWithCarFromDB = async () => {
-  //NOTE: Fetch an order with the associated car details
-  return await Order.find().populate("car");
-};
-
 export const orderServices = {
   getAllOrdersFromDB,
   createOrderInDB,
   claculateRevenueFromDB,
-  getOrderWithCarFromDB,
 };
