@@ -4,7 +4,9 @@ import { UserServices } from './user.services';
 import sendResponse from '../../../utils/sendResponse';
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserServices.getAllUsersFromDB(req.user);
+  // console.log(req.user);
+
+  const result = await UserServices.getAllUsersFromDB();
 
   sendResponse(res, {
     success: true,

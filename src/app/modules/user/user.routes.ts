@@ -7,4 +7,6 @@ const router = express.Router();
 
 router.route('/').get(auth(USER_ROLES.admin), UserControllers.getAllUsers);
 
-export const UserRoutes = router;
+const userRoutes = router;
+
+export default userRoutes;

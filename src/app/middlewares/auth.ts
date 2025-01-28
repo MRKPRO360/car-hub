@@ -6,7 +6,6 @@ import AppError from '../errors/AppError';
 import { IUserRoles } from '../modules/user/user.interface';
 import User from '../modules/user/user.model';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-
 const auth = (...requiredRoles: IUserRoles[]) => {
   return catchAsync(async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
@@ -31,6 +30,7 @@ const auth = (...requiredRoles: IUserRoles[]) => {
     }
 
     const { role, email } = decoded;
+    console.log(decoded);
 
     //CHECK IF THE USER IS EXISTS
     const user = await User.isUserExistsByEmail(email);
