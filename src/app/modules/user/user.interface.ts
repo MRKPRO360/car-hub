@@ -13,6 +13,7 @@ export interface IUser {
   role: IUserRoles;
   isBlocked?: boolean;
   isDeleted?: boolean;
+  isPasswordChangedAt?: boolean;
 }
 
 export interface UserModel extends Model<IUser> {

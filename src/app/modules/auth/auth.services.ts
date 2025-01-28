@@ -5,6 +5,7 @@ import User from '../user/user.model';
 import { ILogin } from './auth.interface';
 import createToken from './auth.utils';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 const registerUserInDB = async (payload: IUser) => {
   // CHECK IF USER EXISTS
@@ -87,8 +88,56 @@ const refreshTokenFromDB = async (token: string) => {
   return { accessToken };
 };
 
+const changePasswordInDB = async (
+  userData: JwtPayload,
+  payload: { oldPassword: string; newPassword: string }
+) => {
+  console.log(userData);
+
+  const { email } = userData;
+
+  // CHECK IF USER EXISTS
+  const user = await User.isUserExistsByEmail(email);
+
+  if (!user) throw new AppError(404, 'User not found!');
+
+  // CHECK IF USER IS BLOCKED
+  if (user.isBlocked) throw new AppError(403, 'User is blocked!');
+
+  // CHECK IF PASSWORD IS CORRECT
+  const isPasswordCorrect = await User.isPasswordMatched(
+    payload.oldPassword,
+    user.password
+  );
+
+  if (!isPasswordCorrect) throw new AppError(401, 'Incorrect password!');
+
+  // CHECK IF USER IS DELETED
+  if (user.isDeleted) throw new AppError(403, 'User is deleted!');
+
+  //hash new password
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_rounds)
+  );
+
+  await User.findOneAndUpdate(
+    {
+      email: userData.email,
+      role: userData.role,
+    },
+    {
+      password: newHashedPassword,
+      passwordChangedAt: new Date(),
+    }
+  );
+
+  return null;
+};
+
 export const authServices = {
   registerUserInDB,
   loginUserFromDB,
   refreshTokenFromDB,
+  changePasswordInDB,
 };

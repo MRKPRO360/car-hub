@@ -24,8 +24,25 @@ const refreshTokenValidationSchema = z.object({
   }),
 });
 
+// password: z.string().min(6, 'Password must be at least 6 characters long'),
+const changePasswordValidationSchema = z.object({
+  body: z.object({
+    oldPassword: z
+      .string({
+        required_error: 'Old password is requried!',
+      })
+      .min(6, 'Password must be at least 6 characters long'),
+    newPassword: z
+      .string({
+        required_error: 'New password is requried!',
+      })
+      .min(6, 'Password must be at least 6 characters long'),
+  }),
+});
+
 export const authValidations = {
   registeredUserValidationSchema,
   loginValidationSchema,
   refreshTokenValidationSchema,
+  changePasswordValidationSchema,
 };

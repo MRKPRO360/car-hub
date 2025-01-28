@@ -8,7 +8,6 @@ import User from '../modules/user/user.model';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 const auth = (...requiredRoles: IUserRoles[]) => {
   return catchAsync(async (req, res, next) => {
-    console.log('inside auth');
     const token = req.headers.authorization;
 
     // CHECK IF THE TOKEN IS EXISTS
@@ -30,7 +29,7 @@ const auth = (...requiredRoles: IUserRoles[]) => {
       throw new AppError(401, 'Token is invalid!');
     }
 
-    const { role, email } = decoded;
+    const { role, email } = decoded as JwtPayload;
     //CHECK IF THE USER IS EXISTS
     const user = await User.isUserExistsByEmail(email);
 
