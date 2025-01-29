@@ -1,22 +1,41 @@
 import { Request, Response } from 'express';
 import { orderServices } from './order.services';
 import catchAsync from '../../../utils/catchAsync';
+import sendResponse from '../../../utils/sendResponse';
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
-  const result = await orderServices.createOrderInDB(req.body);
+  const user = req.user;
 
-  res.status(201).json({
-    message: 'Order created successfully!',
+  const result = await orderServices.createOrderInDB(user!, req.body, req.ip!);
+
+  sendResponse(res, {
+    statusCode: 201,
     success: true,
+    message: 'Order created successfully!',
     data: result,
   });
 });
 
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const result = await orderServices.getAllOrdersFromDB();
-  res.status(200).json({
-    message: 'Order retrieved successfully!',
+
+  sendResponse(res, {
+    statusCode: 200,
     success: true,
+    message: 'Order retrieved successfully!',
+    data: result,
+  });
+});
+
+const verifyPayment = catchAsync(async (req, res) => {
+  const result = await orderServices.verifyPayment(
+    req.query.order_id as string
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 201,
+    message: 'Order verified successfully',
     data: result,
   });
 });
@@ -24,10 +43,10 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
 const claculateRevenue = catchAsync(async (req: Request, res: Response) => {
   const result = await orderServices.claculateRevenueFromDB();
 
-  res.status(200).json({
-    message: 'Revenue calculated successfully!',
-    status: true,
+  sendResponse(res, {
+    statusCode: 200,
     success: true,
+    message: 'Revenue calculated successfully!',
     data: result,
   });
 });
@@ -36,4 +55,5 @@ export const orderControllers = {
   getAllOrders,
   createOrder,
   claculateRevenue,
+  verifyPayment,
 };

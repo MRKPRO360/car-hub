@@ -1,2 +1,2 @@
-const orderStatus = ['PENDING', 'COMPLETED', 'CANCELLED'];
+const orderStatus = ['PENDING', 'COMPLETED', 'CANCELLED', 'PAID', 'SHIPPED'];
 export default orderStatus;

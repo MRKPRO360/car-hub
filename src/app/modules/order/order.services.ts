@@ -1,33 +1,119 @@
+import { JwtPayload } from 'jsonwebtoken';
 import Car from '../car/car.model';
-import { IOrder } from './order.interface';
+
 import Order from './order.model';
+import AppError from '../../errors/AppError';
+import { orderUtils } from './order.utils';
 
 const getAllOrdersFromDB = async () => {
   return await Order.find().populate('car');
 };
 
-const createOrderInDB = async (orderData: IOrder) => {
-  const car = await Car.findById(orderData.car);
+const createOrderInDB = async (
+  user: JwtPayload,
+  payload: { cars: { car: string; quantity: number }[] },
+  client_ip: string
+) => {
+  if (!payload?.cars?.length) throw new AppError(400, 'Order is not specified');
 
-  // RETURN ERROR IF NO CAR EXISTS
-  if (!car) {
-    throw new Error('Car not found!');
+  const cars = payload.cars;
+
+  let totalPrice = 0;
+
+  const carDetails = await Promise.all(
+    cars.map(async (item, index) => {
+      const car = await Car.findById(item.car);
+      if (car && car.isDeleted)
+        throw new Error('You can not order a deleted car!');
+
+      if (car && car.quantity < payload.cars[index].quantity)
+        throw new Error('Insufficinet stock for this car!');
+
+      if (car) {
+        const subtotal = car ? (car.price || 0) * item.quantity : 0;
+        totalPrice += subtotal;
+        return item;
+      } else
+        throw new AppError(400, 'The car following this id does not exist');
+    })
+  );
+
+  let order = await Order.create({
+    user,
+    products: carDetails,
+    totalPrice,
+  });
+
+  // payment integration
+  const shurjopayPayload = {
+    amount: totalPrice,
+    order_id: order._id,
+    currency: 'BDT',
+    customer_name: user?.name,
+    customer_address: user?.address,
+    customer_email: user.email,
+    customer_phone: user?.phone,
+    customer_city: user?.city,
+    client_ip,
+  };
+
+  const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
+
+  if (payment?.transactionStatus) {
+    order = await order.updateOne({
+      transaction: {
+        id: payment.sp_order_id,
+        transactionStatus: payment.transactionStatus,
+      },
+    });
   }
 
-  // CHECK IF THE CAR IS DELETED
+  return payment.checkout_url;
+};
 
-  if (car.isDeleted) throw new Error('You can not order a deleted car!');
+const verifyPayment = async (order_id: string) => {
+  const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
 
-  // CHECK IF THE CAR QUANTITY IS AVAILABLE
-  if (car.quantity < orderData.quantity)
-    throw new Error('Insufficinet stock for this car!');
+  if (verifiedPayment.length) {
+    await Order.findOneAndUpdate(
+      {
+        'transaction.id': order_id,
+      },
+      {
+        'transaction.bank_status': verifiedPayment[0].bank_status,
+        'transaction.sp_code': verifiedPayment[0].sp_code,
+        'transaction.sp_message': verifiedPayment[0].sp_message,
+        'transaction.transactionStatus': verifiedPayment[0].transaction_status,
+        'transaction.method': verifiedPayment[0].method,
+        'transaction.date_time': verifiedPayment[0].date_time,
+        status:
+          verifiedPayment[0].bank_status == 'Success'
+            ? 'PAID'
+            : verifiedPayment[0].bank_status == 'Failed'
+            ? 'PENDING'
+            : verifiedPayment[0].bank_status == 'Cancel'
+            ? 'CANCELLED'
+            : '',
+      }
+    );
 
-  // REDUCING CAR QUANTITY
-  car.quantity -= orderData.quantity;
+    const order = await Order.findById(order_id);
+    if (!order) {
+      throw new AppError(404, 'Order not found');
+    }
 
-  // PRE SAVE MIDDLEWARE WILL SET inStock TO false
-  await car.save();
-  return await Order.create(orderData);
+    // Iterate through cars and update their stock
+    await Promise.all(
+      order.cars.map(async (orderCar) => {
+        await Car.updateOne(
+          { _id: orderCar.car }, // Find car by ID
+          { $inc: { quantity: -orderCar.quantity } } // Reduce quantity
+        );
+      })
+    );
+  }
+
+  return verifiedPayment;
 };
 
 const claculateRevenueFromDB = async () => {
@@ -77,4 +163,5 @@ export const orderServices = {
   getAllOrdersFromDB,
   createOrderInDB,
   claculateRevenueFromDB,
+  verifyPayment,
 };

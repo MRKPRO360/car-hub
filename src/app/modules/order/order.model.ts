@@ -4,26 +4,25 @@ import orderStatus from './order.constant';
 
 const orderSchema = new mongoose.Schema<IOrder>(
   {
-    email: {
-      type: String,
-      required: [true, 'Email is required!'],
-      validate: {
-        validator: function (value: string) {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          return emailRegex.test(value);
+    cars: [
+      {
+        car: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Car', // Referrencing Car model
+          required: [true, 'Car object id is required!'],
         },
-        message: 'Invalid email format!',
+        quantity: {
+          type: Number,
+          required: [true, 'Quantity is required!'],
+          min: [1, 'Quantity must be at least 1!'],
+        },
       },
-    },
-    car: {
+    ],
+
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Car', // Referrencing Car model
-      required: [true, 'Car object id is required!'],
-    },
-    quantity: {
-      type: Number,
-      required: [true, 'Quantity is required!'],
-      min: [1, 'Quantity must be at least 1!'],
+      ref: 'User', // Referrencing User model
+      required: [true, 'User object id is required!'],
     },
     totalPrice: {
       type: Number,
@@ -35,8 +34,15 @@ const orderSchema = new mongoose.Schema<IOrder>(
       enum: orderStatus,
       default: 'PENDING',
     },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
+    transaction: {
+      id: String,
+      transactionStatus: String,
+      bank_status: String,
+      sp_code: String,
+      sp_message: String,
+      method: String,
+      date_time: String,
+    },
   },
   {
     timestamps: true, // Automatically manage createdAt and updatedAt fields

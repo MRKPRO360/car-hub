@@ -38,6 +38,15 @@ const userSchema = new Schema<IUser, UserModel>(
     profileImg: {
       type: String,
     },
+    phone: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
   },
   {
     timestamps: true,

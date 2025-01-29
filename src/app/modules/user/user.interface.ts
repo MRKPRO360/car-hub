@@ -11,6 +11,9 @@ export interface IUser {
   email: string;
   password: string;
   role: IUserRoles;
+  phone?: string;
+  address?: string;
+  city?: string;
   isBlocked?: boolean;
   isDeleted?: boolean;
   isPasswordChangedAt?: boolean;
