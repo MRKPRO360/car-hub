@@ -6,9 +6,12 @@ import AppError from '../../errors/AppError';
 import { orderUtils } from './order.utils';
 import User from '../user/user.model';
 import mongoose from 'mongoose';
+import { IOrder } from './order.interface';
 
 const getAllOrdersFromDB = async () => {
-  return await Order.find().populate('car');
+  return await Order.find()
+    .populate({ path: 'cars.car', model: 'Car' })
+    .populate({ path: 'user', model: 'User', select: 'name email' });
 };
 
 const createOrderInDB = async (
@@ -163,6 +166,21 @@ const verifyPayment = async (order_id: string) => {
   }
 };
 
+const deleteAnOrder = async (id: string) => {
+  return await Order.findByIdAndDelete(id);
+};
+
+const updateAnOrder = async (id: string, payload: Partial<IOrder>) => {
+  //FIXME: WE NEED TO UPDATE NESTED OBJECT
+  const updatedOrder = await Order.findByIdAndUpdate(
+    id,
+    { $set: payload },
+    { new: true }
+  );
+
+  if (!updatedOrder) throw new AppError(400, 'Order not found!');
+};
+
 const claculateRevenueFromDB = async () => {
   return await Order.aggregate([
     // FINDING CARS FROM CARS COLLECTION
@@ -209,6 +227,8 @@ const claculateRevenueFromDB = async () => {
 export const orderServices = {
   getAllOrdersFromDB,
   createOrderInDB,
+  deleteAnOrder,
+  updateAnOrder,
   claculateRevenueFromDB,
   verifyPayment,
 };

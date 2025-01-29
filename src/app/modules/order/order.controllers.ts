@@ -27,6 +27,31 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deleteAnOrder = catchAsync(async (req: Request, res: Response) => {
+  const result = await orderServices.deleteAnOrder(req.params.orderId);
+
+  sendResponse(res, {
+    statusCode: 204,
+    success: true,
+    message: 'Order deleted successfully!',
+    data: result,
+  });
+});
+
+const updateAnOrder = catchAsync(async (req: Request, res: Response) => {
+  const result = await orderServices.updateAnOrder(
+    req.params.orderId,
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Order updated successfully!',
+    data: result,
+  });
+});
+
 const verifyPayment = catchAsync(async (req, res) => {
   const result = await orderServices.verifyPayment(req.query.orderId as string);
 
@@ -54,4 +79,6 @@ export const orderControllers = {
   createOrder,
   claculateRevenue,
   verifyPayment,
+  updateAnOrder,
+  deleteAnOrder,
 };

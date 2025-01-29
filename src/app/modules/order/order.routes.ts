@@ -23,6 +23,17 @@ router.get(
 );
 
 router
+  .route('/:orderId')
+  .patch(
+    auth(USER_ROLES.user, USER_ROLES.admin),
+    orderControllers.updateAnOrder
+  )
+  .delete(
+    auth(USER_ROLES.user, USER_ROLES.admin),
+    orderControllers.deleteAnOrder
+  );
+
+router
   .route('/revenue')
   .get(
     auth(USER_ROLES.user, USER_ROLES.admin),
