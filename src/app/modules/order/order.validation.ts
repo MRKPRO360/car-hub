@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { z } from 'zod';
-import orderStatus from './order.constant';
 
 // Zod schema for validating ObjectId
 const objectIdSchema = z

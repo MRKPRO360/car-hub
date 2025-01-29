@@ -4,16 +4,23 @@ import Car from '../car/car.model';
 import Order from './order.model';
 import AppError from '../../errors/AppError';
 import { orderUtils } from './order.utils';
+import User from '../user/user.model';
+import mongoose from 'mongoose';
 
 const getAllOrdersFromDB = async () => {
   return await Order.find().populate('car');
 };
 
 const createOrderInDB = async (
-  user: JwtPayload,
+  userData: JwtPayload,
   payload: { cars: { car: string; quantity: number }[] },
   client_ip: string
 ) => {
+  const user = await User.findOne({
+    email: userData.email,
+    role: userData.role,
+  }).lean();
+
   if (!payload?.cars?.length) throw new AppError(400, 'Order is not specified');
 
   const cars = payload.cars;
@@ -39,8 +46,8 @@ const createOrderInDB = async (
   );
 
   let order = await Order.create({
-    user,
-    products: carDetails,
+    user: user?._id,
+    cars: carDetails,
     totalPrice,
   });
 
@@ -51,7 +58,7 @@ const createOrderInDB = async (
     currency: 'BDT',
     customer_name: user?.name,
     customer_address: user?.address,
-    customer_email: user.email,
+    customer_email: user?.email,
     customer_phone: user?.phone,
     customer_city: user?.city,
     client_ip,
@@ -72,10 +79,16 @@ const createOrderInDB = async (
 };
 
 const verifyPayment = async (order_id: string) => {
-  const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (verifiedPayment.length) {
-    await Order.findOneAndUpdate(
+  try {
+    const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
+
+    if (!verifiedPayment.length)
+      throw new AppError(400, 'Payment verification failed');
+
+    const order = await Order.findOneAndUpdate(
       {
         'transaction.id': order_id,
       },
@@ -94,26 +107,60 @@ const verifyPayment = async (order_id: string) => {
             : verifiedPayment[0].bank_status == 'Cancel'
             ? 'CANCELLED'
             : '',
+      },
+      {
+        new: true,
+        session,
       }
     );
 
-    const order = await Order.findById(order_id);
     if (!order) {
       throw new AppError(404, 'Order not found');
+    }
+
+    for (const orderCar of order.cars) {
+      const car = await Car.findById(orderCar.car).session(session);
+
+      if (!car) throw new AppError(404, 'Car not found');
+
+      if (!car.inStock)
+        throw new AppError(400, `Car ${car.model} is out of stock`);
+
+      if (orderCar.quantity > car.quantity) {
+        throw new AppError(400, `Not enough stock for ${car.model}`);
+      }
     }
 
     // Iterate through cars and update their stock
     await Promise.all(
       order.cars.map(async (orderCar) => {
-        await Car.updateOne(
+        const updatedCar = await Car.findOneAndUpdate(
           { _id: orderCar.car }, // Find car by ID
-          { $inc: { quantity: -orderCar.quantity } } // Reduce quantity
+          { $inc: { quantity: -orderCar.quantity } }, // Reduce quantity
+          { new: true, session }
         );
+
+        if (updatedCar && updatedCar.quantity === 0) {
+          await Car.findByIdAndUpdate(
+            orderCar.car,
+            { inStock: false },
+            { session }
+          );
+        }
       })
     );
-  }
 
-  return verifiedPayment;
+    await session.commitTransaction();
+    session.endSession();
+
+    return verifiedPayment;
+  } catch (err: any) {
+    console.log(err);
+    await session.abortTransaction();
+    session.endSession();
+
+    throw new AppError(400, err.message);
+  }
 };
 
 const claculateRevenueFromDB = async () => {

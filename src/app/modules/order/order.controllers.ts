@@ -28,9 +28,7 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
 });
 
 const verifyPayment = catchAsync(async (req, res) => {
-  const result = await orderServices.verifyPayment(
-    req.query.order_id as string
-  );
+  const result = await orderServices.verifyPayment(req.query.orderId as string);
 
   sendResponse(res, {
     success: true,
