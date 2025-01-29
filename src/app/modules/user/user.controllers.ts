@@ -2,10 +2,9 @@ import { Request, Response } from 'express';
 import catchAsync from '../../../utils/catchAsync';
 import { UserServices } from './user.services';
 import sendResponse from '../../../utils/sendResponse';
-import { JwtPayload } from 'jsonwebtoken';
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserServices.getAllUsersFromDB(req.user as JwtPayload);
+  const result = await UserServices.getAllUsersFromDB();
 
   sendResponse(res, {
     success: true,
@@ -15,6 +14,42 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.getSingleUserFromDB(req.params.userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User retrieved successfully!',
+    data: result,
+  });
+});
+
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.updateUserInDB(req.params.userId, req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User updated successfully!',
+    data: result,
+  });
+});
+
+const deleteUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.deleteUserFromDB(req.params.userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User deleted successfully!',
+    data: result,
+  });
+});
+
 export const UserControllers = {
   getAllUsers,
+  getSingleUser,
+  updateUser,
+  deleteUser,
 };
