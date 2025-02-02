@@ -16,8 +16,12 @@ router
     validateRequest(userValidationsSchema.updateUserValidationSchema),
     UserControllers.updateUser
   )
+
   .delete(auth(USER_ROLES.admin), UserControllers.deleteUser);
 
+router
+  .route('/deactivate-user/:userId')
+  .patch(auth(USER_ROLES.admin), UserControllers.deactivateUser);
 const userRoutes = router;
 
 export default userRoutes;

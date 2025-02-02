@@ -20,9 +20,6 @@ const auth = (...requiredRoles: IUserRoles[]) => {
         token,
         config.jwt_access_secret as string
       ) as JwtPayload;
-
-      if (!decoded || !decoded.email || !decoded.role)
-        throw new AppError(403, 'You are not authorized!');
     } catch (err: any) {
       console.log(err);
 
@@ -33,7 +30,7 @@ const auth = (...requiredRoles: IUserRoles[]) => {
     //CHECK IF THE USER IS EXISTS
     const user = await User.isUserExistsByEmail(email);
 
-    if (!user) throw new AppError(400, 'This user does not exists!');
+    if (!user) throw new AppError(404, 'This user does not exists!');
 
     //CHECK IF THE USER IS BLOCKED
     if (user && user.isBlocked)

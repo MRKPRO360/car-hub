@@ -36,6 +36,17 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deactivateUser = catchAsync(async (req: Request, res: Response) => {
+  await UserServices.deactivateUserInDB(req.params.userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User deactivated successfully!',
+    data: null,
+  });
+});
+
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.deleteUserFromDB(req.params.userId);
 
@@ -52,4 +63,5 @@ export const UserControllers = {
   getSingleUser,
   updateUser,
   deleteUser,
+  deactivateUser,
 };

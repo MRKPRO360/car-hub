@@ -15,7 +15,7 @@ const carSchema = new mongoose.Schema<ICar>(
     },
     year: {
       type: Number,
-      required: [true, 'A car must have released year!'],
+      default: new Date().getFullYear(),
     },
     price: {
       type: Number,

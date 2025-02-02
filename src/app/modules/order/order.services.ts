@@ -7,11 +7,28 @@ import { orderUtils } from './order.utils';
 import User from '../user/user.model';
 import mongoose from 'mongoose';
 import { IOrder } from './order.interface';
+import QueryBuilder from '../../builder/QueryBuilder';
 
-const getAllOrdersFromDB = async () => {
-  return await Order.find()
-    .populate({ path: 'cars.car', model: 'Car' })
-    .populate({ path: 'user', model: 'User', select: 'name email' });
+const getAllOrdersFromDB = async (query: Record<string, unknown>) => {
+  const ordersQuery = new QueryBuilder(
+    Order.find()
+      .populate({ path: 'cars.car', model: 'Car' })
+      .populate({ path: 'user', model: 'User', select: 'name email' }),
+    query
+  )
+    .search(['name', 'email', 'status'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await ordersQuery.countTotal();
+  const result = await ordersQuery.modelQuery;
+
+  return {
+    meta,
+    result,
+  };
 };
 
 const createOrderInDB = async (

@@ -1,4 +1,3 @@
-import { JwtPayload } from 'jsonwebtoken';
 import User from './user.model';
 import AppError from '../../errors/AppError';
 import { IUser } from './user.interface';
@@ -22,6 +21,23 @@ const updateUserInDB = async (id: string, payload: Partial<IUser>) => {
   });
 };
 
+const deactivateUserInDB = async (id: string) => {
+  const user = await User.findById(id);
+
+  if (!user) throw new AppError(400, 'User not found!');
+  if (user.isBlocked) throw new AppError(400, 'User is already blocked');
+  console.log(user);
+
+  return await User.findByIdAndUpdate(
+    id,
+    { isBlocked: true },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+};
+
 const deleteUserFromDB = async (id: string) => {
   const user = await User.findById(id);
 
@@ -43,5 +59,6 @@ export const UserServices = {
   getAllUsersFromDB,
   updateUserInDB,
   deleteUserFromDB,
+  deactivateUserInDB,
   getSingleUserFromDB,
 };

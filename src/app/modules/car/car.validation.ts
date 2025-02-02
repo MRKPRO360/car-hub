@@ -24,7 +24,9 @@ const createCarValidationSchema = z.object({
       .max(new Date().getFullYear(), 'Year cannot be in the future.')
       .refine((val) => val > 0, {
         message: 'A car must have a released year!',
-      }),
+      })
+      .default(new Date().getFullYear())
+      .optional(),
 
     price: z
       .number()

@@ -17,13 +17,14 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
-  const result = await orderServices.getAllOrdersFromDB();
+  const result = await orderServices.getAllOrdersFromDB(req.query);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: 'Order retrieved successfully!',
-    data: result,
+    data: result.result,
+    meta: result.meta,
   });
 });
 
