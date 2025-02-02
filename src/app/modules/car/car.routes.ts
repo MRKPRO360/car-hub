@@ -27,7 +27,7 @@ router
 router
   .route('/:carId')
   .get(carControllers.getACar)
-  .put(
+  .patch(
     validateRequest(carValidationSchema.updateCarValidationSchema),
     carControllers.updateACar
   )

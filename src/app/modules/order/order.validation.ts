@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { z } from 'zod';
+import orderStatus from './order.constant';
 
 // Zod schema for validating ObjectId
 const objectIdSchema = z
@@ -20,6 +21,13 @@ const createOrderValidationSchema = z.object({
   }),
 });
 
+const updateOrderValidationSchema = z.object({
+  body: z.object({
+    status: z.enum([...(orderStatus as [string, ...string[]])]).optional(),
+  }),
+});
+
 export const orderValidationsSchema = {
   createOrderValidationSchema,
+  updateOrderValidationSchema,
 };

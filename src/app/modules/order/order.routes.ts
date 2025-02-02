@@ -25,7 +25,8 @@ router.get(
 router
   .route('/:orderId')
   .patch(
-    auth(USER_ROLES.user, USER_ROLES.admin),
+    validateRequest(orderValidationsSchema.updateOrderValidationSchema),
+    auth(USER_ROLES.admin),
     orderControllers.updateAnOrder
   )
   .delete(
