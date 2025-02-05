@@ -18,12 +18,13 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const user_model_1 = __importDefault(require("../user/user.model"));
 const auth_utils_1 = __importDefault(require("./auth.utils"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const registerUserInDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const registerUserInDB = (file, payload) => __awaiter(void 0, void 0, void 0, function* () {
     // CHECK IF USER EXISTS
     const userExists = yield user_model_1.default.isUserExistsByEmail(payload.email);
     if (userExists)
         throw new AppError_1.default(400, 'User already registered!');
-    return yield user_model_1.default.create(payload);
+    return yield user_model_1.default.create(Object.assign({ profileImg: (file === null || file === void 0 ? void 0 : file.path) || '' }, payload));
 });
 const loginUserFromDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     // CHECK IF USER EXISTS
@@ -66,8 +67,36 @@ const refreshTokenFromDB = (token) => __awaiter(void 0, void 0, void 0, function
     const accessToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
     return { accessToken };
 });
+const changePasswordInDB = (userData, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = userData;
+    // CHECK IF USER EXISTS
+    const user = yield user_model_1.default.isUserExistsByEmail(email);
+    if (!user)
+        throw new AppError_1.default(404, 'User not found!');
+    // CHECK IF USER IS BLOCKED
+    if (user.isBlocked)
+        throw new AppError_1.default(403, 'User is blocked!');
+    // CHECK IF PASSWORD IS CORRECT
+    const isPasswordCorrect = yield user_model_1.default.isPasswordMatched(payload.oldPassword, user.password);
+    if (!isPasswordCorrect)
+        throw new AppError_1.default(400, 'Incorrect password!');
+    // CHECK IF USER IS DELETED
+    if (user.isDeleted)
+        throw new AppError_1.default(403, 'User is deleted!');
+    //hash new password
+    const newHashedPassword = yield bcrypt_1.default.hash(payload.newPassword, Number(config_1.default.bcrypt_salt_rounds));
+    const result = yield user_model_1.default.findOneAndUpdate({
+        email: userData.email,
+        role: userData.role,
+    }, {
+        password: newHashedPassword,
+        passwordChangedAt: new Date(),
+    });
+    return result;
+});
 exports.authServices = {
     registerUserInDB,
     loginUserFromDB,
     refreshTokenFromDB,
+    changePasswordInDB,
 };

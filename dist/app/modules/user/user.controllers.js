@@ -17,7 +17,6 @@ const catchAsync_1 = __importDefault(require("../../../utils/catchAsync"));
 const user_services_1 = require("./user.services");
 const sendResponse_1 = __importDefault(require("../../../utils/sendResponse"));
 const getAllUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // console.log(req.user);
     const result = yield user_services_1.UserServices.getAllUsersFromDB();
     (0, sendResponse_1.default)(res, {
         success: true,
@@ -26,6 +25,56 @@ const getAllUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data: result,
     });
 }));
+const getMe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_services_1.UserServices.getMeFromDB(req.user);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'User retrieved successfully!',
+        data: result,
+    });
+}));
+const getSingleUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_services_1.UserServices.getSingleUserFromDB(req.params.userId);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'User retrieved successfully!',
+        data: result,
+    });
+}));
+const updateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_services_1.UserServices.updateUserInDB(req.params.userId, req.body);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'User updated successfully!',
+        data: result,
+    });
+}));
+const deactivateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield user_services_1.UserServices.deactivateUserInDB(req.params.userId);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'User deactivated successfully!',
+        data: null,
+    });
+}));
+const deleteUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_services_1.UserServices.deleteUserFromDB(req.params.userId);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'User deleted successfully!',
+        data: result,
+    });
+}));
 exports.UserControllers = {
     getAllUsers,
+    getSingleUser,
+    updateUser,
+    deleteUser,
+    deactivateUser,
+    getMe,
 };

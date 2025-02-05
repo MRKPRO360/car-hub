@@ -6,14 +6,51 @@ import AppError from '../../errors/AppError';
 import { orderUtils } from './order.utils';
 import User from '../user/user.model';
 import mongoose from 'mongoose';
-import { IOrder } from './order.interface';
 import QueryBuilder from '../../builder/QueryBuilder';
 
 const getAllOrdersFromDB = async (query: Record<string, unknown>) => {
   const ordersQuery = new QueryBuilder(
-    Order.find()
+    Order.find().populate({ path: 'cars.car', model: 'Car' }).populate({
+      path: 'user',
+      model: 'User',
+      select: 'name email address city img profileImg phone',
+    }),
+    query
+  )
+    .search(['name', 'email', 'status'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await ordersQuery.countTotal();
+  const result = await ordersQuery.modelQuery;
+
+  return {
+    meta,
+    result,
+  };
+};
+
+const getMyOrdersFromDB = async (
+  query: Record<string, unknown>,
+  userData: JwtPayload
+) => {
+  const user = await User.findOne({
+    email: userData.email,
+    role: userData.role,
+  }).lean();
+
+  if (!user) throw new AppError(403, 'User not found');
+
+  const ordersQuery = new QueryBuilder(
+    Order.find({ user: user._id })
       .populate({ path: 'cars.car', model: 'Car' })
-      .populate({ path: 'user', model: 'User', select: 'name email' }),
+      .populate({
+        path: 'user',
+        model: 'User',
+        select: 'name email address city img profileImg phone',
+      }),
     query
   )
     .search(['name', 'email', 'status'])
@@ -175,7 +212,6 @@ const verifyPayment = async (order_id: string) => {
 
     return verifiedPayment;
   } catch (err: any) {
-    console.log(err);
     await session.abortTransaction();
     session.endSession();
 
@@ -187,15 +223,20 @@ const deleteAnOrder = async (id: string) => {
   return await Order.findByIdAndDelete(id);
 };
 
-const updateAnOrder = async (id: string, payload: Partial<IOrder>) => {
-  //FIXME: WE NEED TO UPDATE NESTED OBJECT
-  const updatedOrder = await Order.findByIdAndUpdate(
-    id,
-    { $set: payload },
-    { new: true }
-  );
+const updateAnOrder = async (id: string) => {
+  const orders = await Order.findById(id);
 
-  if (!updatedOrder) throw new AppError(400, 'Order not found!');
+  if (orders?.status === 'PAID') {
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { status: 'COMPLETED' },
+      { new: true }
+    );
+
+    if (!updatedOrder) throw new AppError(400, 'Order not found!');
+  } else {
+    throw new AppError(400, 'You can not change status!');
+  }
 };
 
 const claculateRevenueFromDB = async () => {
@@ -248,4 +289,5 @@ export const orderServices = {
   updateAnOrder,
   claculateRevenueFromDB,
   verifyPayment,
+  getMyOrdersFromDB,
 };

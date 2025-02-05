@@ -13,7 +13,7 @@ router
   .route('/')
   .get(carControllers.getAllCars)
   .post(
-    auth(USER_ROLES.admin, USER_ROLES.user),
+    auth(USER_ROLES.admin),
     multerUpload.single('file'),
     (req: Request, res: Response, next: NextFunction) => {
       req.body = JSON.parse(req.body.data);
@@ -22,6 +22,10 @@ router
     validateRequest(carValidationSchema.createCarValidationSchema),
     carControllers.createACar
   );
+
+router
+  .route('/my-car')
+  .get(auth(USER_ROLES.admin, USER_ROLES.user), carControllers.getMyCars);
 
 // FOR SINGLE CAR
 router
@@ -34,15 +38,3 @@ router
   .delete(carControllers.deleteACar);
 
 export default router;
-
-// router.post(
-//   '/create-faculty',
-//   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
-//   upload.single('file'),
-//   (req: Request, res: Response, next: NextFunction) => {
-//     req.body = JSON.parse(req.body.data);
-//     next();
-//   },
-//   validateRequest(createFacultyValidationSchema),
-//   UserControllers.createFaculty
-// );

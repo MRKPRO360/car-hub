@@ -13,10 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
 const index_1 = __importDefault(require("./app/config/index"));
-const DB = (_a = index_1.default.database_url) === null || _a === void 0 ? void 0 : _a.replace("<db_password>", index_1.default.database_password);
+const DB = (_a = index_1.default.database_url) === null || _a === void 0 ? void 0 : _a.replace('<db_password>', index_1.default.database_password);
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose_1.default.connect(DB);

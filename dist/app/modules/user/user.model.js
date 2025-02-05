@@ -42,6 +42,22 @@ const userSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
+    isPasswordChangedAt: {
+        type: Boolean,
+        default: false,
+    },
+    profileImg: {
+        type: String,
+    },
+    phone: {
+        type: String,
+    },
+    address: {
+        type: String,
+    },
+    city: {
+        type: String,
+    },
 }, {
     timestamps: true,
 });

@@ -1,9 +1,11 @@
-import mongoose from "mongoose";
-import app from "./app";
-import config from "./app/config/index";
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
+import mongoose from 'mongoose';
+import app from './app';
+import config from './app/config/index';
 
 const DB = config.database_url?.replace(
-  "<db_password>",
+  '<db_password>',
   config.database_password as string
 );
 

@@ -16,8 +16,30 @@ exports.carServices = void 0;
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const car_constant_1 = require("./car.constant");
 const car_model_1 = __importDefault(require("./car.model"));
+const user_model_1 = __importDefault(require("../user/user.model"));
+const AppError_1 = __importDefault(require("../../errors/AppError"));
 const getAllCarsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const carsQuery = new QueryBuilder_1.default(car_model_1.default.find(), query)
+    const carsQuery = new QueryBuilder_1.default(car_model_1.default.find().populate({ path: 'author', model: 'User' }), query)
+        .search(car_constant_1.carSearchableFileds)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+    const meta = yield carsQuery.countTotal();
+    const result = yield carsQuery.modelQuery;
+    return {
+        meta,
+        result,
+    };
+});
+const getMyCarsFromDB = (query, userData) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.default.findOne({
+        email: userData.email,
+        role: userData.role,
+    });
+    if (!user)
+        throw new AppError_1.default(403, 'User not found');
+    const carsQuery = new QueryBuilder_1.default(car_model_1.default.find({ author: user._id }).populate({ path: 'author', model: 'User' }), query)
         .search(car_constant_1.carSearchableFileds)
         .filter()
         .sort()
@@ -33,10 +55,16 @@ const getAllCarsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* 
 const getACarFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield car_model_1.default.findById(id);
 });
-const creatACarInDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const creatACarInDB = (file, payload, userData) => __awaiter(void 0, void 0, void 0, function* () {
     //APPLY THIS LOGIC
     // IF CAR BRAND AND NAME IS EXISTS AND USER WANTS TO ADD ANOTHER CAR THEN SHOW AN ERROR OR ADD THE STOCK
-    return yield car_model_1.default.create(payload);
+    const user = yield user_model_1.default.findOne({
+        email: userData.email,
+        role: userData.role,
+    });
+    if (!user)
+        throw new AppError_1.default(403, 'User not found');
+    return yield car_model_1.default.create(Object.assign(Object.assign({ img: file.path }, payload), { author: user._id }));
 });
 const updateACarInDB = (id, updatedVal) => __awaiter(void 0, void 0, void 0, function* () {
     return yield car_model_1.default.findByIdAndUpdate(id, { $set: updatedVal }, 
@@ -54,4 +82,5 @@ exports.carServices = {
     getACarFromDB,
     updateACarInDB,
     deleteACarFromDB,
+    getMyCarsFromDB,
 };

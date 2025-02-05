@@ -36,6 +36,10 @@ const auth = (...requiredRoles: IUserRoles[]) => {
     if (user && user.isBlocked)
       throw new AppError(403, 'You are not authorized!');
 
+    //CHECK IF THE USER IS DELETED
+    if (user && user.isDeleted)
+      throw new AppError(403, 'You are not authorized!');
+
     //CHECK IF THE USER ROLE IS CORRECT
     if (requiredRoles && !requiredRoles.includes(role))
       throw new AppError(403, 'You are not authorized');

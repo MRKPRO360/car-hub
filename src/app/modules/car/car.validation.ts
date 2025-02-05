@@ -51,12 +51,6 @@ const createCarValidationSchema = z.object({
       .refine((val) => val >= 0, {
         message: 'Quantity must be a positive number or zero.',
       }),
-
-    inStock: z.boolean({
-      invalid_type_error: 'inStock must be a boolean value.',
-      required_error:
-        'inStock is required. Specify whether the product is in stock.',
-    }),
   }),
 });
 

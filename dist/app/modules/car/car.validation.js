@@ -24,7 +24,9 @@ const createCarValidationSchema = zod_1.z.object({
             .max(new Date().getFullYear(), 'Year cannot be in the future.')
             .refine((val) => val > 0, {
             message: 'A car must have a released year!',
-        }),
+        })
+            .default(new Date().getFullYear())
+            .optional(),
         price: zod_1.z
             .number()
             .positive({ message: 'Price must be a positive number.' })
@@ -44,10 +46,6 @@ const createCarValidationSchema = zod_1.z.object({
             .nonnegative({ message: 'Quantity must be a positive number or zero.' })
             .refine((val) => val >= 0, {
             message: 'Quantity must be a positive number or zero.',
-        }),
-        inStock: zod_1.z.boolean({
-            invalid_type_error: 'inStock must be a boolean value.',
-            required_error: 'inStock is required. Specify whether the product is in stock.',
         }),
     }),
 });

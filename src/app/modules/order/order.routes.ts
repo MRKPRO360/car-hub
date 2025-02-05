@@ -16,11 +16,13 @@ router
     orderControllers.createOrder
   );
 
-router.get(
-  '/verify-order',
-  auth(USER_ROLES.user, USER_ROLES.admin),
-  orderControllers.verifyPayment
-);
+router
+  .route('/verify-order')
+  .get(auth(USER_ROLES.user, USER_ROLES.admin), orderControllers.verifyPayment);
+
+router
+  .route('/my-orders')
+  .get(auth(USER_ROLES.user), orderControllers.getMyOrders);
 
 router
   .route('/:orderId')

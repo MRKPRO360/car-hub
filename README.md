@@ -20,18 +20,46 @@ This API allows users to manage orders for cars in an inventory system. Users ca
 
 ## Features
 
-✅ Place an order for a car.
-✅ Validate input data (e.g., email, car ID, quantity).
-✅ Automatically reduce inventory stock when an order is placed.
-✅ Mark cars as out of stock when inventory reaches zero.
-✅ Calculate total revenue using MongoDB aggregation.
-✅ Sophisticated error message
+✅ User Authentication & Management
+✅ Register new users and store profile data
+✅ Secure login with JWT authentication
+✅ Refresh authentication token for session management
+✅ Change password with validation
+✅ Admin can retrieve all users
+✅ Get individual user profile and update details
+✅ Deactivate or delete a user account
+
+✅ Car Management
+✅ Add new cars with image upload functionality
+✅ Retrieve all available cars or filter by user
+✅ Update car details (e.g., price, description)
+✅ Delete cars from inventory
+✅ Ensure data validation for car-related operations
+
+✅ Order Management
+✅ Place an order for a car
+✅ Validate input data (e.g., car ID, quantity, payment details)
+✅ Automatically reduce inventory stock when an order is placed
+✅ Retrieve all orders for an admin or specific user
+✅ Verify payments for placed orders
+✅ Allow users to check their own orders
+✅ Update or cancel orders (Admin/User roles)
+
+✅ Revenue & Analytics
+✅ Calculate total revenue using MongoDB aggregation
+✅ Generate insights into order trends and car sales
+
+✅ Security & Middleware
+✅ Role-based access control (Admin/User)
+✅ Authentication middleware using JWT
+✅ Input validation to prevent invalid requests
+✅ Sophisticated error handling with meaningful messages
 
 ## Demo
 
-![App Screenshot](https://i.ibb.co.com/7n3zFm3/20ec75c7-1d75-4112-9b23-c576f4bba62f.webp)
+![App Screenshot](https://i.ibb.co.com/C3399GTF/car-hub.webp)
 
-👉 [Live Demo](https://car-project-one.vercel.app/)
+👉 [Live Demo](https://car-hub-puce-three.vercel.app/)
 
 ## Tech Stack
 
@@ -86,372 +114,244 @@ npm run start:prod
 
 The API will be available at <span style="background-color:rgb(72, 72, 72);">http://localhost:3000`</span>
 
-## API Endpoints
-
-<span style="background-color:rgb(72, 72, 72);">/api/cars</span>
-
-Description
-This endpoint provides functionality to manage car-related resources. You can use this endpoint to create, read, update, and delete cars.
-
-Endpoints
-
-1. GET /api/cars
-   Fetch all available cars.
-
-Request:
-
-Method: GET
-URL Parameters: None
-Query Parameters:
-category (optional): Filter cars by category (e.g., Sedan, SUV, etc.).
-inStock (optional): true or false to filter cars based on their stock status.
-Response:
-
-Status Code: 200 OK
-Body Example:
-
-```
-
-{
-"id": "648d1f1a7e90fddaf9e4627b",
-"brand": "Toyota",
-"model": "Corolla",
-"year": 2023,
-"price": 20000,
-"category": "Sedan",
-"description": "A reliable and fuel-efficient sedan.",
-"quantity": 10,
-"inStock": true,
-"createdAt": "2024-11-01T12:00:00Z",
-"updatedAt": "2024-11-10T12:00:00Z"
-}
-```
-
-2. GET /api/cars/:id
-   Fetch a single car by its ID.
-
-Request:
-
-Method: GET
-URL Parameters:
-id (required): The ID of the car to retrieve.
-Response:
-
-Status Code: 200 OK
-Body Example:
-
-```
-
-{
-"id": "648d1f1a7e90fddaf9e4627b",
-"brand": "Toyota",
-"model": "Corolla",
-"year": 2023,
-"price": 20000,
-"category": "Sedan",
-"description": "A reliable and fuel-efficient sedan.",
-"quantity": 10,
-"inStock": true,
-"createdAt": "2024-11-01T12:00:00Z",
-"updatedAt": "2024-11-10T12:00:00Z"
-}
-
-```
-
-Error Example:
-
-Status Code: 404 Not Found
-Body:
-
-```
-{ "error": "Car not found" }
-```
-
-3. POST /api/cars
-   Create a new car.
-
-Request:
-
-Method: POST
-Body Example:
-
-```
-{
-"brand": "Toyota",
-"model": "Corolla",
-"year": 2023,
-"price": 20000,
-"category": "Sedan",
-"description": "A reliable and fuel-efficient sedan.",
-"quantity": 10
-}
-```
-
-Response:
-
-Status Code: 201 Created
-Body Example:
-
-```
-{
-"id": "648d1f1a7e90fddaf9e4627b",
-"brand": "Toyota",
-"model": "Corolla",
-"year": 2023,
-"price": 20000,
-"category": "Sedan",
-"description": "A reliable and fuel-efficient sedan.",
-"quantity": 10,
-"inStock": true,
-"createdAt": "2024-11-01T12:00:00Z",
-"updatedAt": "2024-11-01T12:00:00Z"
-}
-
-```
-
-Error Example:
+# API Documentation
 
-Status Code: 400 Bad Request
-Body:
-
-```
-{ "error": "Validation failed: Missing required fields" }
-```
-
-4. PUT /api/cars/:id
-   Update an existing car.
-
-Request:
-
-Method: PUT
-URL Parameters:
-id (required): The ID of the car to update.
-Body Example:
-
-```
-
-{
-"price": 22000,
-"quantity": 15
-}
-
-```
-
-Response:
-
-Status Code: 200 OK
-Body Example:
-
-```
-
-{
-"id": "648d1f1a7e90fddaf9e4627b",
-"brand": "Toyota",
-"model": "Corolla",
-"year": 2023,
-"price": 22000,
-"category": "Sedan",
-"description": "A reliable and fuel-efficient sedan.",
-"quantity": 15,
-"inStock": true,
-"createdAt": "2024-11-01T12:00:00Z",
-"updatedAt": "2024-11-15T12:00:00Z"
-}
-
-```
-
-5. DELETE /api/cars/:id
-   Delete a car by its ID.
+This project provides a RESTful API for managing users, orders, cars, and authentication. Below is the documentation for the available routes and their functionalities.
 
-Request:
-Method: DELETE
-URL Parameters:
-id (required): The ID of the car to delete.
+---
 
-Response:
-Status Code: 204 No Content
+## Table of Contents
 
-Error Example:
-Status Code: 404 Not Found
-Body:
-
-```
-{ "error": "Car not found" }
-```
+1. [User Routes](#user-routes)
+2. [Order Routes](#order-routes)
+3. [Car Routes](#car-routes)
+4. [Auth Routes](#auth-routes)
 
-Validation Rules
-Brand, Model, Year, Price, and Description are required fields.
-Quantity must be at least 1.
-Category must be one of the following:
-Sedan
-SUV
-Truck
-Coupe
-Convertible
-Error Codes
-400 Bad Request: Validation errors or missing fields.
-404 Not Found: Car not found for the given ID.
-500 Internal Server Error: Unexpected server errors.
+---
 
-6. Fetch All Cars:
+## User Routes
 
-```
-curl -X GET http://localhost:3000/api/cars
-```
+### Get All Users
 
-7. Fetch a Car by ID:
+- **Endpoint**: `GET /users`
+- **Access**: Admin
+- **Description**: Retrieve all users.
+- **Controller**: `UserControllers.getAllUsers`
 
-```
-curl -X GET http://localhost:3000/api/cars/648d1f1a7e90fddaf9e4627b
-```
+### Get My Profile
 
-8. Create a Car
+- **Endpoint**: `GET /users/me`
+- **Access**: Admin, User
+- **Description**: Retrieve the profile of the currently logged-in user.
+- **Controller**: `UserControllers.getMe`
 
-```
-curl -X POST http://localhost:3000/api/cars \
+### Get Single User
 
--H "Content-Type: application/json" \
- -d '{
-"brand": "Tesla",
-"model": "Model S",
-"year": 2024,
-"price": 80000,
-"category": "Sedan",
-"description": "An electric luxury sedan.",
-"quantity": 5
-}'
-```
+- **Endpoint**: `GET /users/:userId`
+- **Access**: Admin
+- **Description**: Retrieve a single user by ID.
+- **Controller**: `UserControllers.getSingleUser`
 
-4. Update a Car:
+### Update User
 
-```
-curl -X PUT http://localhost:3000/api/cars/648d1f1a7e90fddaf9e4627b \
- -H "Content-Type: application/json" \
- -d '{
-"price": 85000,
-"quantity": 3
-}'
-```
+- **Endpoint**: `PATCH /users/:userId`
+- **Access**: Admin, User
+- **Description**: Update user details.
+- **Validation**: `userValidationsSchema.updateUserValidationSchema`
+- **Controller**: `UserControllers.updateUser`
 
-5. Delete a Car:
+### Delete User
 
-```
+- **Endpoint**: `DELETE /users/:userId`
+- **Access**: Admin
+- **Description**: Delete a user by ID.
+- **Controller**: `UserControllers.deleteUser`
 
-curl -X DELETE http://localhost:3000/api/cars/648d1f1a7e90fddaf9e4627b
+### Deactivate User
 
-```
+- **Endpoint**: `PATCH /users/deactivate-user/:userId`
+- **Access**: Admin
+- **Description**: Deactivate a user by ID.
+- **Controller**: `UserControllers.deactivateUser`
 
-### 1. Create an Order
+---
 
-URL: /orders
-Method: POST
-Description: Creates a new order and updates the inventory.
+## Order Routes
 
-Request Body
+### Get All Orders
 
-```
+- **Endpoint**: `GET /orders`
+- **Access**: Admin, User
+- **Description**: Retrieve all orders.
+- **Controller**: `orderControllers.getAllOrders`
 
-{
-"email": "example@example.com",
-"car": "648d1f1a7e90fddaf9e4627b",
-"quantity": 2,
-"totalPrice": 50000
-}
+### Create Order
 
-```
+- **Endpoint**: `POST /orders`
+- **Access**: Admin, User
+- **Description**: Create a new order.
+- **Validation**: `orderValidationsSchema.createOrderValidationSchema`
+- **Controller**: `orderControllers.createOrder`
 
-Response
+### Verify Payment
 
-```
+- **Endpoint**: `GET /orders/verify-order`
+- **Access**: Admin, User
+- **Description**: Verify payment for an order.
+- **Controller**: `orderControllers.verifyPayment`
 
-{
-"\_id": "648d1f1a7e90fddaf9e4627c",
-"email": "example@example.com",
-"car": "648d1f1a7e90fddaf9e4627b",
-"quantity": 2,
-"totalPrice": 50000,
-"createdAt": "2024-11-22T15:30:45.456Z",
-"updatedAt": "2024-11-22T15:30:45.456Z",
-"\_\_v": 0
-}
+### Get My Orders
 
-```
+- **Endpoint**: `GET /orders/my-orders`
+- **Access**: User
+- **Description**: Retrieve orders for the currently logged-in user.
+- **Controller**: `orderControllers.getMyOrders`
 
-#### Notes
+### Update Order
 
-- Reduces the car's quantity.
-- Marks the car as out of stock if quantity reaches zero.
+- **Endpoint**: `PATCH /orders/:orderId`
+- **Access**: Admin
+- **Description**: Update an order by ID.
+- **Validation**: `orderValidationsSchema.updateOrderValidationSchema`
+- **Controller**: `orderControllers.updateAnOrder`
 
-\*Returns an error if insufficient stock is available.
+### Delete Order
 
-### 2.Get Total Revenue
+- **Endpoint**: `DELETE /orders/:orderId`
+- **Access**: Admin, User
+- **Description**: Delete an order by ID.
+- **Controller**: `orderControllers.deleteAnOrder`
 
-URL: /orders/revenue
-Method: GET
-Description: Calculates the total revenue from all orders.
+### Calculate Revenue
 
-Response
-json
-Copy code
-{
-"totalRevenue": 150000
-}
+- **Endpoint**: `GET /orders/revenue`
+- **Access**: Admin, User
+- **Description**: Calculate total revenue.
+- **Controller**: `orderControllers.claculateRevenue`
 
-## Validation
+---
 
-- Email: Must be in a valid email format.
-- Car ID: Must be a valid MongoDB ObjectId and reference an existing car.
-- Quantity: Must be at least 1.
-- Total Price: Must be a non-negative number.
+## Car Routes
 
-### Error Example
+### Get All Cars
 
-If an invalid car ID is provided:
+- **Endpoint**: `GET /cars`
+- **Access**: Public
+- **Description**: Retrieve all cars.
+- **Controller**: `carControllers.getAllCars`
 
-```
+### Create a Car
 
-{
-"error": "Invalid car ID"
-}
+- **Endpoint**: `POST /cars`
+- **Access**: Admin
+- **Description**: Create a new car.
+- **Validation**: `carValidationSchema.createCarValidationSchema`
+- **File Upload**: Single file upload for car image.
+- **Controller**: `carControllers.createACar`
 
-```
+### Get My Cars
 
-## Database Models
+- **Endpoint**: `GET /cars/my-car`
+- **Access**: Admin, User
+- **Description**: Retrieve cars owned by the currently logged-in user.
+- **Controller**: `carControllers.getMyCars`
 
-### Car Schema
+### Get a Single Car
 
-```
+- **Endpoint**: `GET /cars/:carId`
+- **Access**: Public
+- **Description**: Retrieve a single car by ID.
+- **Controller**: `carControllers.getACar`
 
-export interface ICar {
-brand: string;
-model: string;
-year: number;
-price: number;
-category: 'Sedan' | 'SUV' | 'Truck' | 'Coupe' | 'Convertible';
-description: string;
-quantity: number;
-inStock: boolean;
-createdAt: Date;
-updatedAt: Date;
-isDeleted: boolean;
-}
+### Update a Car
 
-```
+- **Endpoint**: `PATCH /cars/:carId`
+- **Access**: Admin
+- **Description**: Update car details by ID.
+- **Validation**: `carValidationSchema.updateCarValidationSchema`
+- **Controller**: `carControllers.updateACar`
 
-### Order Schema
+### Delete a Car
 
-```
+- **Endpoint**: `DELETE /cars/:carId`
+- **Access**: Admin
+- **Description**: Delete a car by ID.
+- **Controller**: `carControllers.deleteACar`
 
-export interface IOrder {
-email: string;
-car: mongoose.Types.ObjectId;
-quantity: number;
-totalPrice: number;
-}
+---
 
-```
+## Auth Routes
 
-## Key Functionality
+### Register User
+
+- **Endpoint**: `POST /auth/register`
+- **Access**: Public
+- **Description**: Register a new user.
+- **Validation**: `authValidations.registeredUserValidationSchema`
+- **File Upload**: Single file upload for user profile picture.
+- **Controller**: `authControllers.registerUser`
+
+### Login User
+
+- **Endpoint**: `POST /auth/login`
+- **Access**: Public
+- **Description**: Login a user.
+- **Validation**: `authValidations.loginValidationSchema`
+- **Controller**: `authControllers.loginUser`
+
+### Refresh Token
+
+- **Endpoint**: `POST /auth/refresh-token`
+- **Access**: Public
+- **Description**: Refresh the access token.
+- **Validation**: `authValidations.refreshTokenValidationSchema`
+- **Controller**: `authControllers.refreshToken`
+
+### Change Password
+
+- **Endpoint**: `POST /auth/change-password`
+- **Access**: Admin, User
+- **Description**: Change the password of the currently logged-in user.
+- **Validation**: `authValidations.changePasswordValidationSchema`
+- **Controller**: `authControllers.changePassword`
+
+---
+
+## Middlewares
+
+1. **Auth Middleware**: Ensures that the user is authenticated and has the required role.
+2. **Validate Request Middleware**: Validates the request body using Joi schemas.
+3. **Multer Middleware**: Handles file uploads.
+
+---
+
+## Constants
+
+- **USER_ROLES**: Contains user roles (`admin`, `user`).
+
+---
+
+## Validation Schemas
+
+- **User Validation**: `userValidationsSchema`
+- **Order Validation**: `orderValidationsSchema`
+- **Car Validation**: `carValidationSchema`
+- **Auth Validation**: `authValidations`
+
+---
+
+## Controllers
+
+- **User Controllers**: `UserControllers`
+- **Order Controllers**: `orderControllers`
+- **Car Controllers**: `carControllers`
+- **Auth Controllers**: `authControllers`
+
+---
+
+## License
+
+This project is licensed under the MIT License.
 
 ### Reduce Quantity
 

@@ -17,11 +17,15 @@ const carSchema = new mongoose_1.default.Schema({
     },
     year: {
         type: Number,
-        required: [true, 'A car must have released year!'],
+        default: new Date().getFullYear(),
     },
     price: {
         type: Number,
         required: [true, 'A car must have price!'],
+    },
+    img: {
+        type: String,
+        required: [true, 'A car must have img!'],
     },
     category: {
         type: String,
@@ -51,13 +55,12 @@ const carSchema = new mongoose_1.default.Schema({
     },
     inStock: {
         type: Boolean,
-        required: [
-            true,
-            'inStock is required. Specify whether the product is in storck.',
-        ],
+        default: true,
     },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
+    author: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        required: [true, 'Car should have a author info!'],
+    },
     isDeleted: { type: Boolean, default: false },
 }, {
     timestamps: true,

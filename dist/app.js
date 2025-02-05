@@ -13,18 +13,18 @@ const app = (0, express_1.default)();
 // CORS
 //SHOULD HAVE TO CHANGE THE ORIGIN WHEN PRODUCTION!
 app.use((0, cors_1.default)({
-    origin: ["http//localhost:5173"],
+    origin: ['https://car-frontend-n1ils51ek-mrkpro360s-projects.vercel.app'],
     credentials: true,
 }));
 // 3rd PARTY MIDDLEWARE
-app.use((0, morgan_1.default)("dev"));
+app.use((0, morgan_1.default)('dev'));
 // BODY PARSER
 app.use(express_1.default.json());
 // ROUTER
-app.use("/api/v1", routes_1.default);
+app.use('/api/v1', routes_1.default);
 // HELLO RESPONSE
-app.get("/", (req, res) => {
-    res.status(200).json({ message: "Hello World! 👋" });
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Hello World! 👋' });
 });
 // GLOBAL ERROR HANDLER
 app.use(globalErrorHandler_1.default);

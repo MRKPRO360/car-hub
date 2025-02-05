@@ -16,6 +16,20 @@ const getAllCars = catchAsync(async (req: Request, res: Response) => {
     meta: result.meta,
   });
 });
+const getMyCars = catchAsync(async (req: Request, res: Response) => {
+  const { query } = req;
+  const user = req.user;
+
+  const result = await carServices.getMyCarsFromDB(query, user!);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Cars retrieved successfully!',
+    data: result.result,
+    meta: result.meta,
+  });
+});
 
 const getACar = catchAsync(async (req: Request, res: Response) => {
   const { carId } = req.params;
@@ -31,7 +45,10 @@ const getACar = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createACar = catchAsync(async (req: Request, res: Response) => {
-  const result = await carServices.creatACarInDB(req.file, req.body);
+  const user = req.user;
+
+  const result = await carServices.creatACarInDB(req.file, req.body, user!);
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -74,6 +91,7 @@ const deleteACar = catchAsync(async (req: Request, res: Response) => {
 export const carControllers = {
   getAllCars,
   getACar,
+  getMyCars,
   updateACar,
   deleteACar,
   createACar,

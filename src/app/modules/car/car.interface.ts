@@ -14,4 +14,5 @@ export interface ICar {
   updatedAt?: Date;
   isDeleted?: boolean;
   img?: string;
+  author: Types.ObjectId;
 }

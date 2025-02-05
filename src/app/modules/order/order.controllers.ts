@@ -28,6 +28,18 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyOrders = catchAsync(async (req: Request, res: Response) => {
+  const result = await orderServices.getMyOrdersFromDB(req.query, req.user!);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Order retrieved successfully!',
+    data: result.result,
+    meta: result.meta,
+  });
+});
+
 const deleteAnOrder = catchAsync(async (req: Request, res: Response) => {
   const result = await orderServices.deleteAnOrder(req.params.orderId);
 
@@ -40,10 +52,7 @@ const deleteAnOrder = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateAnOrder = catchAsync(async (req: Request, res: Response) => {
-  const result = await orderServices.updateAnOrder(
-    req.params.orderId,
-    req.body
-  );
+  const result = await orderServices.updateAnOrder(req.params.orderId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -54,7 +63,9 @@ const updateAnOrder = catchAsync(async (req: Request, res: Response) => {
 });
 
 const verifyPayment = catchAsync(async (req, res) => {
-  const result = await orderServices.verifyPayment(req.query.orderId as string);
+  const result = await orderServices.verifyPayment(
+    req.query.order_id as string
+  );
 
   sendResponse(res, {
     success: true,
@@ -77,6 +88,7 @@ const claculateRevenue = catchAsync(async (req: Request, res: Response) => {
 
 export const orderControllers = {
   getAllOrders,
+  getMyOrders,
   createOrder,
   claculateRevenue,
   verifyPayment,

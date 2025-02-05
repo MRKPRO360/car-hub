@@ -27,6 +27,18 @@ const getAllCars = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         meta: result.meta,
     });
 }));
+const getMyCars = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { query } = req;
+    const user = req.user;
+    const result = yield car_services_1.carServices.getMyCarsFromDB(query, user);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Cars retrieved successfully!',
+        data: result.result,
+        meta: result.meta,
+    });
+}));
 const getACar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { carId } = req.params;
     const result = yield car_services_1.carServices.getACarFromDB(carId);
@@ -38,7 +50,8 @@ const getACar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
     });
 }));
 const createACar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield car_services_1.carServices.creatACarInDB(req.body);
+    const user = req.user;
+    const result = yield car_services_1.carServices.creatACarInDB(req.file, req.body, user);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -76,6 +89,7 @@ const deleteACar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 exports.carControllers = {
     getAllCars,
     getACar,
+    getMyCars,
     updateACar,
     deleteACar,
     createACar,

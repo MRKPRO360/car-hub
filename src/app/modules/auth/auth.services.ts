@@ -13,7 +13,7 @@ const registerUserInDB = async (file: any, payload: IUser) => {
 
   if (userExists) throw new AppError(400, 'User already registered!');
 
-  return await User.create({ profileImg: file.path, ...payload });
+  return await User.create({ profileImg: file?.path || '', ...payload });
 };
 
 const loginUserFromDB = async (payload: ILogin) => {
@@ -108,7 +108,7 @@ const changePasswordInDB = async (
     user.password
   );
 
-  if (!isPasswordCorrect) throw new AppError(401, 'Incorrect password!');
+  if (!isPasswordCorrect) throw new AppError(400, 'Incorrect password!');
 
   // CHECK IF USER IS DELETED
   if (user.isDeleted) throw new AppError(403, 'User is deleted!');
@@ -119,7 +119,7 @@ const changePasswordInDB = async (
     Number(config.bcrypt_salt_rounds)
   );
 
-  await User.findOneAndUpdate(
+  const result = await User.findOneAndUpdate(
     {
       email: userData.email,
       role: userData.role,
@@ -130,7 +130,7 @@ const changePasswordInDB = async (
     }
   );
 
-  return null;
+  return result;
 };
 
 export const authServices = {

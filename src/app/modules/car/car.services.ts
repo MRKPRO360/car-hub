@@ -1,10 +1,46 @@
+import { JwtPayload } from 'jsonwebtoken';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { carSearchableFileds } from './car.constant';
 import { ICar } from './car.interface';
 import Car from './car.model';
+import User from '../user/user.model';
+import AppError from '../../errors/AppError';
 
 const getAllCarsFromDB = async (query: Record<string, unknown>) => {
-  const carsQuery = new QueryBuilder(Car.find(), query)
+  const carsQuery = new QueryBuilder(
+    Car.find().populate({ path: 'author', model: 'User' }),
+    query
+  )
+    .search(carSearchableFileds)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await carsQuery.countTotal();
+  const result = await carsQuery.modelQuery;
+
+  return {
+    meta,
+    result,
+  };
+};
+
+const getMyCarsFromDB = async (
+  query: Record<string, unknown>,
+  userData: JwtPayload
+) => {
+  const user = await User.findOne({
+    email: userData.email,
+    role: userData.role,
+  });
+
+  if (!user) throw new AppError(403, 'User not found');
+
+  const carsQuery = new QueryBuilder(
+    Car.find({ author: user._id }).populate({ path: 'author', model: 'User' }),
+    query
+  )
     .search(carSearchableFileds)
     .filter()
     .sort()
@@ -24,11 +60,22 @@ const getACarFromDB = async (id: string) => {
   return await Car.findById(id);
 };
 
-const creatACarInDB = async (file: any, payload: ICar) => {
+const creatACarInDB = async (
+  file: any,
+  payload: ICar,
+  userData: JwtPayload
+) => {
   //APPLY THIS LOGIC
   // IF CAR BRAND AND NAME IS EXISTS AND USER WANTS TO ADD ANOTHER CAR THEN SHOW AN ERROR OR ADD THE STOCK
 
-  return await Car.create({ img: file.path, ...payload });
+  const user = await User.findOne({
+    email: userData.email,
+    role: userData.role,
+  });
+
+  if (!user) throw new AppError(403, 'User not found');
+
+  return await Car.create({ img: file.path, ...payload, author: user._id });
 };
 
 const updateACarInDB = async (id: string, updatedVal: ICar) => {
@@ -55,4 +102,5 @@ export const carServices = {
   getACarFromDB,
   updateACarInDB,
   deleteACarFromDB,
+  getMyCarsFromDB,
 };

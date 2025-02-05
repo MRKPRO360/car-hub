@@ -14,6 +14,17 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.getMeFromDB(req.user!);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User retrieved successfully!',
+    data: result,
+  });
+});
+
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.getSingleUserFromDB(req.params.userId);
 
@@ -64,4 +75,5 @@ export const UserControllers = {
   updateUser,
   deleteUser,
   deactivateUser,
+  getMe,
 };

@@ -12,7 +12,7 @@ const app: Application = express();
 //SHOULD HAVE TO CHANGE THE ORIGIN WHEN PRODUCTION!
 app.use(
   cors({
-    origin: ['http://localhost:5173'],
+    origin: ['https://car-frontend-n1ils51ek-mrkpro360s-projects.vercel.app'],
     credentials: true,
   })
 );

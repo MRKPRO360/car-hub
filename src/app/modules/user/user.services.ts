@@ -1,6 +1,7 @@
 import User from './user.model';
 import AppError from '../../errors/AppError';
 import { IUser } from './user.interface';
+import { JwtPayload } from 'jsonwebtoken';
 
 const getAllUsersFromDB = async () => {
   return await User.find();
@@ -8,6 +9,10 @@ const getAllUsersFromDB = async () => {
 
 const getSingleUserFromDB = async (id: string) => {
   return await User.findById(id);
+};
+
+const getMeFromDB = async (payload: JwtPayload) => {
+  return await User.findOne({ email: payload.email });
 };
 
 const updateUserInDB = async (id: string, payload: Partial<IUser>) => {
@@ -26,7 +31,6 @@ const deactivateUserInDB = async (id: string) => {
 
   if (!user) throw new AppError(400, 'User not found!');
   if (user.isBlocked) throw new AppError(400, 'User is already blocked');
-  console.log(user);
 
   return await User.findByIdAndUpdate(
     id,
@@ -61,4 +65,5 @@ export const UserServices = {
   deleteUserFromDB,
   deactivateUserInDB,
   getSingleUserFromDB,
+  getMeFromDB,
 };

@@ -52,7 +52,6 @@ const refreshToken = catchAsync(async (req, res) => {
 
 const changePassword = catchAsync(async (req, res) => {
   const { ...passwordData } = req.body;
-  console.log(passwordData);
 
   const result = await authServices.changePasswordInDB(
     req.user as JwtPayload,

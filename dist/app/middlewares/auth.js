@@ -21,8 +21,7 @@ const user_model_1 = __importDefault(require("../modules/user/user.model"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const auth = (...requiredRoles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
-        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
+        const token = req.headers.authorization;
         // CHECK IF THE TOKEN IS EXISTS
         if (!token)
             throw new AppError_1.default(403, 'You are not authorized!');
@@ -30,21 +29,21 @@ const auth = (...requiredRoles) => {
         let decoded;
         try {
             decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret);
-            if (!decoded || !decoded.email || !decoded.role)
-                throw new AppError_1.default(403, 'You are not authorized!');
         }
         catch (err) {
             console.log(err);
             throw new AppError_1.default(401, 'Token is invalid!');
         }
         const { role, email } = decoded;
-        console.log(decoded);
         //CHECK IF THE USER IS EXISTS
         const user = yield user_model_1.default.isUserExistsByEmail(email);
         if (!user)
-            throw new AppError_1.default(400, 'This user does not exists!');
+            throw new AppError_1.default(404, 'This user does not exists!');
         //CHECK IF THE USER IS BLOCKED
         if (user && user.isBlocked)
+            throw new AppError_1.default(403, 'You are not authorized!');
+        //CHECK IF THE USER IS DELETED
+        if (user && user.isDeleted)
             throw new AppError_1.default(403, 'You are not authorized!');
         //CHECK IF THE USER ROLE IS CORRECT
         if (requiredRoles && !requiredRoles.includes(role))
