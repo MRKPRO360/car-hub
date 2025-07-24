@@ -13,7 +13,7 @@ export interface IUser {
   role: IUserRoles;
   phone?: string;
   address?: string;
-  city?: string;
+  country?: string;
   isBlocked?: boolean;
   isDeleted?: boolean;
   isPasswordChangedAt?: boolean;

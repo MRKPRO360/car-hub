@@ -44,7 +44,7 @@ const userSchema = new Schema<IUser, UserModel>(
     address: {
       type: String,
     },
-    city: {
+    country: {
       type: String,
     },
   },

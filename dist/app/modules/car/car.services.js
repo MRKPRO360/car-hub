@@ -55,7 +55,7 @@ const getMyCarsFromDB = (query, userData) => __awaiter(void 0, void 0, void 0, f
 const getACarFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield car_model_1.default.findById(id);
 });
-const creatACarInDB = (file, payload, userData) => __awaiter(void 0, void 0, void 0, function* () {
+const creatACarInDB = (payload, userData) => __awaiter(void 0, void 0, void 0, function* () {
     //APPLY THIS LOGIC
     // IF CAR BRAND AND NAME IS EXISTS AND USER WANTS TO ADD ANOTHER CAR THEN SHOW AN ERROR OR ADD THE STOCK
     const user = yield user_model_1.default.findOne({
@@ -64,7 +64,7 @@ const creatACarInDB = (file, payload, userData) => __awaiter(void 0, void 0, voi
     });
     if (!user)
         throw new AppError_1.default(403, 'User not found');
-    return yield car_model_1.default.create(Object.assign(Object.assign({ img: file.path }, payload), { author: user._id }));
+    return yield car_model_1.default.create(Object.assign(Object.assign({}, payload), { images: payload.images, coverImage: payload.coverImage, author: user._id }));
 });
 const updateACarInDB = (id, updatedVal) => __awaiter(void 0, void 0, void 0, function* () {
     return yield car_model_1.default.findByIdAndUpdate(id, { $set: updatedVal }, 

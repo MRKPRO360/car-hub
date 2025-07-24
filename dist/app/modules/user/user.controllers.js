@@ -61,6 +61,15 @@ const deactivateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: null,
     });
 }));
+const activateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield user_services_1.UserServices.activateUserInDB(req.params.userId);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'User activated successfully!',
+        data: null,
+    });
+}));
 const deleteUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_services_1.UserServices.deleteUserFromDB(req.params.userId);
     (0, sendResponse_1.default)(res, {
@@ -76,5 +85,6 @@ exports.UserControllers = {
     updateUser,
     deleteUser,
     deactivateUser,
+    activateUser,
     getMe,
 };

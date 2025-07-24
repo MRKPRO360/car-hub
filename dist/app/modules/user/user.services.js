@@ -16,7 +16,7 @@ exports.UserServices = void 0;
 const user_model_1 = __importDefault(require("./user.model"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const getAllUsersFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield user_model_1.default.find();
+    return yield user_model_1.default.find({ role: { $ne: 'admin' } });
 });
 const getSingleUserFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield user_model_1.default.findById(id);
@@ -44,6 +44,17 @@ const deactivateUserInDB = (id) => __awaiter(void 0, void 0, void 0, function* (
         runValidators: true,
     });
 });
+const activateUserInDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.default.findById(id);
+    if (!user)
+        throw new AppError_1.default(400, 'User not found!');
+    if (!user.isBlocked)
+        throw new AppError_1.default(400, 'User is not blocked');
+    return yield user_model_1.default.findByIdAndUpdate(id, { isBlocked: false }, {
+        new: true,
+        runValidators: true,
+    });
+});
 const deleteUserFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.default.findById(id);
     if (!user)
@@ -60,6 +71,7 @@ exports.UserServices = {
     updateUserInDB,
     deleteUserFromDB,
     deactivateUserInDB,
+    activateUserInDB,
     getSingleUserFromDB,
     getMeFromDB,
 };

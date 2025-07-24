@@ -47,6 +47,28 @@ const createCarValidationSchema = zod_1.z.object({
             .refine((val) => val >= 0, {
             message: 'Quantity must be a positive number or zero.',
         }),
+        mileage: zod_1.z.number().nonnegative(), // can be 0 or more
+        fuelType: zod_1.z.enum(['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG', 'LPG']),
+        transmission: zod_1.z.enum(['Automatic', 'Manual']),
+        color: zod_1.z.string().trim().optional(),
+        engine: zod_1.z.string().trim().optional(),
+        horsepower: zod_1.z.number().optional(),
+        torque: zod_1.z.number().optional(),
+        seatingCapacity: zod_1.z.number().int().positive().optional(),
+        features: zod_1.z.array(zod_1.z.string()).optional().default([]),
+        vin: zod_1.z.string().trim().optional(),
+        condition: zod_1.z
+            .enum(['New', 'Used', 'Certified Pre-Owned'])
+            .optional()
+            .default('New'),
+        location: zod_1.z
+            .object({
+            city: zod_1.z.string().optional(),
+            state: zod_1.z.string().optional(),
+            country: zod_1.z.string().optional(),
+        })
+            .optional(),
+        views: zod_1.z.number().int().nonnegative().optional().default(0),
     }),
 });
 const updateCarValidationSchema = zod_1.z.object({
@@ -105,6 +127,31 @@ const updateCarValidationSchema = zod_1.z.object({
             required_error: 'inStock is required. Specify whether the product is in stock.',
         })
             .optional(),
+        mileage: zod_1.z.number().nonnegative().optional(), // can be 0 or more
+        fuelType: zod_1.z
+            .enum(['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG', 'LPG'])
+            .optional(),
+        transmission: zod_1.z.enum(['Automatic', 'Manual']).optional(),
+        color: zod_1.z.string().trim().optional().optional(),
+        engine: zod_1.z.string().trim().optional().optional(),
+        horsepower: zod_1.z.number().optional().optional(),
+        torque: zod_1.z.number().optional().optional(),
+        seatingCapacity: zod_1.z.number().int().positive().optional(),
+        features: zod_1.z.array(zod_1.z.string()).optional().default([]),
+        vin: zod_1.z.string().trim().optional(),
+        condition: zod_1.z
+            .enum(['New', 'Used', 'Certified Pre-Owned'])
+            .optional()
+            .default('New')
+            .optional(),
+        location: zod_1.z
+            .object({
+            city: zod_1.z.string().optional(),
+            state: zod_1.z.string().optional(),
+            country: zod_1.z.string().optional(),
+        })
+            .optional(),
+        views: zod_1.z.number().int().nonnegative().optional().default(0),
     }),
 });
 exports.carValidationSchema = {

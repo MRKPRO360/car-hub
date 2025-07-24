@@ -23,9 +23,12 @@ const carSchema = new mongoose_1.default.Schema({
         type: Number,
         required: [true, 'A car must have price!'],
     },
-    img: {
+    coverImage: {
         type: String,
         required: [true, 'A car must have img!'],
+    },
+    images: {
+        type: [String],
     },
     category: {
         type: String,
@@ -60,6 +63,71 @@ const carSchema = new mongoose_1.default.Schema({
     author: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         required: [true, 'Car should have a author info!'],
+    },
+    ratingAverage: {
+        type: Number,
+        default: 4,
+        min: 1,
+        max: 5,
+    },
+    ratingQuantity: {
+        type: Number,
+        default: 0,
+    },
+    mileage: {
+        type: Number, // in kilometers or miles
+        required: true,
+    },
+    fuelType: {
+        type: String,
+        enum: ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG', 'LPG'],
+        required: true,
+    },
+    transmission: {
+        type: String,
+        enum: ['Automatic', 'Manual'],
+        required: true,
+    },
+    color: {
+        type: String,
+        trim: true,
+    },
+    engine: {
+        type: String, // e.g., "2.0L V4", "Dual Motor", etc.
+        trim: true,
+    },
+    horsepower: {
+        type: Number,
+    },
+    torque: {
+        type: Number, // Nm or lb-ft
+    },
+    seatingCapacity: {
+        type: Number,
+    },
+    features: {
+        type: [String], // ['Bluetooth', 'Backup Camera', 'Sunroof', 'Leather Seats']
+        default: [],
+    },
+    vin: {
+        type: String,
+        unique: true,
+        sparse: true,
+        trim: true,
+    },
+    condition: {
+        type: String,
+        enum: ['New', 'Used', 'Certified Pre-Owned'],
+        default: 'New',
+    },
+    location: {
+        city: String,
+        state: String,
+        country: String,
+    },
+    views: {
+        type: Number,
+        default: 0,
     },
     isDeleted: { type: Boolean, default: false },
 }, {

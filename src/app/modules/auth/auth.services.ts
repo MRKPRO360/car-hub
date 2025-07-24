@@ -13,7 +13,31 @@ const registerUserInDB = async (file: any, payload: IUser) => {
 
   if (userExists) throw new AppError(400, 'User already registered!');
 
-  return await User.create({ profileImg: file?.path || '', ...payload });
+  const user = await User.create({ profileImg: file?.path || '', ...payload });
+
+  const jwtPayload = {
+    email: user.email,
+    role: user.role,
+    profileImg: user?.profileImg,
+    userID: user._id,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as string
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
 const loginUserFromDB = async (payload: ILogin) => {
@@ -39,6 +63,8 @@ const loginUserFromDB = async (payload: ILogin) => {
   const jwtPayload = {
     email: user.email,
     role: user.role,
+    profileImg: user?.profileImg,
+    userID: user._id,
   };
 
   const accessToken = createToken(
@@ -77,6 +103,8 @@ const refreshTokenFromDB = async (token: string) => {
   const jwtPayload = {
     email: user.email,
     role: user.role,
+    profileImg: user?.profileImg,
+    userID: user._id,
   };
 
   const accessToken = createToken(

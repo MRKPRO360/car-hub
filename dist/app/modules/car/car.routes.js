@@ -15,8 +15,20 @@ const router = express_1.default.Router();
 router
     .route('/')
     .get(car_controllers_1.carControllers.getAllCars)
-    .post((0, auth_1.default)(user_constant_1.default.admin), multer_config_1.multerUpload.single('file'), (req, res, next) => {
-    req.body = JSON.parse(req.body.data);
+    .post((0, auth_1.default)(user_constant_1.default.admin), multer_config_1.multerUpload.fields([
+    { name: 'coverImage', maxCount: 1 },
+    { name: 'images', maxCount: 3 },
+]), (req, res, next) => {
+    if (req.body.data) {
+        req.body = JSON.parse(req.body.data);
+    }
+    if (req.files && req.files.coverImage) {
+        req.body.coverImage = req.files.coverImage[0].path;
+    }
+    // PROJECT IMAGES
+    if (req.files && req.files.images) {
+        req.body.images = req.files.images.map((file) => file.path);
+    }
     next();
 }, (0, validateRequest_1.default)(car_validation_1.carValidationSchema.createCarValidationSchema), car_controllers_1.carControllers.createACar);
 router

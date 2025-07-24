@@ -24,7 +24,18 @@ const registerUserInDB = (file, payload) => __awaiter(void 0, void 0, void 0, fu
     const userExists = yield user_model_1.default.isUserExistsByEmail(payload.email);
     if (userExists)
         throw new AppError_1.default(400, 'User already registered!');
-    return yield user_model_1.default.create(Object.assign({ profileImg: (file === null || file === void 0 ? void 0 : file.path) || '' }, payload));
+    const user = yield user_model_1.default.create(Object.assign({ profileImg: (file === null || file === void 0 ? void 0 : file.path) || '' }, payload));
+    const jwtPayload = {
+        email: user.email,
+        role: user.role,
+        profileImg: user === null || user === void 0 ? void 0 : user.profileImg,
+    };
+    const accessToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
+    const refreshToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_expires_in);
+    return {
+        accessToken,
+        refreshToken,
+    };
 });
 const loginUserFromDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     // CHECK IF USER EXISTS
@@ -44,6 +55,7 @@ const loginUserFromDB = (payload) => __awaiter(void 0, void 0, void 0, function*
     const jwtPayload = {
         email: user.email,
         role: user.role,
+        profileImg: user === null || user === void 0 ? void 0 : user.profileImg,
     };
     const accessToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
     const refreshToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_expires_in);
@@ -63,6 +75,7 @@ const refreshTokenFromDB = (token) => __awaiter(void 0, void 0, void 0, function
     const jwtPayload = {
         email: user.email,
         role: user.role,
+        profileImg: user === null || user === void 0 ? void 0 : user.profileImg,
     };
     const accessToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
     return { accessToken };

@@ -102,7 +102,7 @@ const createOrderInDB = (userData, payload, client_ip) => __awaiter(void 0, void
         customer_address: user === null || user === void 0 ? void 0 : user.address,
         customer_email: user === null || user === void 0 ? void 0 : user.email,
         customer_phone: user === null || user === void 0 ? void 0 : user.phone,
-        customer_city: user === null || user === void 0 ? void 0 : user.city,
+        customer_city: user === null || user === void 0 ? void 0 : user.country,
         client_ip,
     };
     const payment = yield order_utils_1.orderUtils.makePaymentAsync(shurjopayPayload);

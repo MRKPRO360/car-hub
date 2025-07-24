@@ -117,7 +117,7 @@ const createOrderInDB = async (
     customer_address: user?.address,
     customer_email: user?.email,
     customer_phone: user?.phone,
-    customer_city: user?.city,
+    customer_city: user?.country,
     client_ip,
   };
 

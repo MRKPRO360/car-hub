@@ -26,6 +26,11 @@ router
 router
   .route('/deactivate-user/:userId')
   .patch(auth(USER_ROLES.admin), UserControllers.deactivateUser);
+
+router
+  .route('/activate-user/:userId')
+  .patch(auth(USER_ROLES.admin), UserControllers.activateUser);
+
 const userRoutes = router;
 
 export default userRoutes;

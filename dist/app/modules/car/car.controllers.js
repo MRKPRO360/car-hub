@@ -51,7 +51,7 @@ const getACar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
 }));
 const createACar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
-    const result = yield car_services_1.carServices.creatACarInDB(req.file, req.body, user);
+    const result = yield car_services_1.carServices.creatACarInDB(req.body, user);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,

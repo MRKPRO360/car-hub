@@ -58,6 +58,17 @@ const deactivateUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const activateUser = catchAsync(async (req: Request, res: Response) => {
+  await UserServices.activateUserInDB(req.params.userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'User activated successfully!',
+    data: null,
+  });
+});
+
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.deleteUserFromDB(req.params.userId);
 
@@ -75,5 +86,6 @@ export const UserControllers = {
   updateUser,
   deleteUser,
   deactivateUser,
+  activateUser,
   getMe,
 };

@@ -51,6 +51,28 @@ const createCarValidationSchema = z.object({
       .refine((val) => val >= 0, {
         message: 'Quantity must be a positive number or zero.',
       }),
+    mileage: z.number().nonnegative(), // can be 0 or more
+    fuelType: z.enum(['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG', 'LPG']),
+    transmission: z.enum(['Automatic', 'Manual']),
+    color: z.string().trim().optional(),
+    engine: z.string().trim().optional(),
+    horsepower: z.number().optional(),
+    torque: z.number().optional(),
+    seatingCapacity: z.number().int().positive().optional(),
+    features: z.array(z.string()).optional().default([]),
+    vin: z.string().trim().optional(),
+    condition: z
+      .enum(['New', 'Used', 'Certified Pre-Owned'])
+      .optional()
+      .default('New'),
+    location: z
+      .object({
+        city: z.string().optional(),
+        state: z.string().optional(),
+        country: z.string().optional(),
+      })
+      .optional(),
+    views: z.number().int().nonnegative().optional().default(0),
   }),
 });
 
@@ -118,6 +140,32 @@ const updateCarValidationSchema = z.object({
           'inStock is required. Specify whether the product is in stock.',
       })
       .optional(),
+
+    mileage: z.number().nonnegative().optional(), // can be 0 or more
+    fuelType: z
+      .enum(['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG', 'LPG'])
+      .optional(),
+    transmission: z.enum(['Automatic', 'Manual']).optional(),
+    color: z.string().trim().optional().optional(),
+    engine: z.string().trim().optional().optional(),
+    horsepower: z.number().optional().optional(),
+    torque: z.number().optional().optional(),
+    seatingCapacity: z.number().int().positive().optional(),
+    features: z.array(z.string()).optional().default([]),
+    vin: z.string().trim().optional(),
+    condition: z
+      .enum(['New', 'Used', 'Certified Pre-Owned'])
+      .optional()
+      .default('New')
+      .optional(),
+    location: z
+      .object({
+        city: z.string().optional(),
+        state: z.string().optional(),
+        country: z.string().optional(),
+      })
+      .optional(),
+    views: z.number().int().nonnegative().optional().default(0),
   }),
 });
 

@@ -4,9 +4,8 @@ import { IUser } from './user.interface';
 import { JwtPayload } from 'jsonwebtoken';
 
 const getAllUsersFromDB = async () => {
-  return await User.find();
+  return await User.find({ role: { $ne: 'admin' } });
 };
-
 const getSingleUserFromDB = async (id: string) => {
   return await User.findById(id);
 };
@@ -42,6 +41,22 @@ const deactivateUserInDB = async (id: string) => {
   );
 };
 
+const activateUserInDB = async (id: string) => {
+  const user = await User.findById(id);
+
+  if (!user) throw new AppError(400, 'User not found!');
+  if (!user.isBlocked) throw new AppError(400, 'User is not blocked');
+
+  return await User.findByIdAndUpdate(
+    id,
+    { isBlocked: false },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+};
+
 const deleteUserFromDB = async (id: string) => {
   const user = await User.findById(id);
 
@@ -64,6 +79,7 @@ export const UserServices = {
   updateUserInDB,
   deleteUserFromDB,
   deactivateUserInDB,
+  activateUserInDB,
   getSingleUserFromDB,
   getMeFromDB,
 };

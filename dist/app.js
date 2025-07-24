@@ -13,7 +13,11 @@ const app = (0, express_1.default)();
 // CORS
 //SHOULD HAVE TO CHANGE THE ORIGIN WHEN PRODUCTION!
 app.use((0, cors_1.default)({
-    origin: ['https://car-frontend-n1ils51ek-mrkpro360s-projects.vercel.app'],
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'https://car-frontend-azure.vercel.app',
+    ],
     credentials: true,
 }));
 // 3rd PARTY MIDDLEWARE

@@ -60,11 +60,7 @@ const getACarFromDB = async (id: string) => {
   return await Car.findById(id);
 };
 
-const creatACarInDB = async (
-  file: any,
-  payload: ICar,
-  userData: JwtPayload
-) => {
+const creatACarInDB = async (payload: ICar, userData: JwtPayload) => {
   //APPLY THIS LOGIC
   // IF CAR BRAND AND NAME IS EXISTS AND USER WANTS TO ADD ANOTHER CAR THEN SHOW AN ERROR OR ADD THE STOCK
 
@@ -75,7 +71,12 @@ const creatACarInDB = async (
 
   if (!user) throw new AppError(403, 'User not found');
 
-  return await Car.create({ img: file.path, ...payload, author: user._id });
+  return await Car.create({
+    ...payload,
+    images: payload.images,
+    coverImage: payload.coverImage,
+    author: user._id,
+  });
 };
 
 const updateACarInDB = async (id: string, updatedVal: ICar) => {
