@@ -22,7 +22,7 @@ interface ICarDetails {
 
 export interface ICar extends ICarDetails {
   _id: Types.ObjectId;
-  brand: string;
+  brand: 'BMW' | 'Ford' | 'Audi' | 'Tesla' | 'Toyota';
   model: string;
   year: number;
   price: number;

@@ -48,6 +48,28 @@ router
   .route('/:carId')
   .get(carControllers.getACar)
   .patch(
+    auth(USER_ROLES.admin),
+    multerUpload.fields([
+      { name: 'coverImage', maxCount: 1 },
+      { name: 'images', maxCount: 3 },
+    ]),
+
+    (req: Request, res: Response, next: NextFunction) => {
+      if (req.body.data) {
+        req.body = JSON.parse(req.body.data);
+      }
+      if (req.files && (req.files as any).coverImage) {
+        req.body.coverImage = (req.files as any).coverImage[0].path;
+      }
+
+      // PROJECT IMAGES
+      if (req.files && (req.files as any).images) {
+        req.body.images = (req.files as any).images.map(
+          (file: any) => file.path
+        );
+      }
+      next();
+    },
     validateRequest(carValidationSchema.updateCarValidationSchema),
     carControllers.updateACar
   )

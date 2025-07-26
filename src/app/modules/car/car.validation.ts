@@ -59,7 +59,7 @@ const createCarValidationSchema = z.object({
     horsepower: z.number().optional(),
     torque: z.number().optional(),
     seatingCapacity: z.number().int().positive().optional(),
-    features: z.array(z.string()).optional().default([]),
+    features: z.array(z.string()),
     vin: z.string().trim().optional(),
     condition: z
       .enum(['New', 'Used', 'Certified Pre-Owned'])

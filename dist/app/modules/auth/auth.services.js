@@ -29,6 +29,7 @@ const registerUserInDB = (file, payload) => __awaiter(void 0, void 0, void 0, fu
         email: user.email,
         role: user.role,
         profileImg: user === null || user === void 0 ? void 0 : user.profileImg,
+        userID: user._id,
     };
     const accessToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
     const refreshToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_expires_in);
@@ -56,6 +57,7 @@ const loginUserFromDB = (payload) => __awaiter(void 0, void 0, void 0, function*
         email: user.email,
         role: user.role,
         profileImg: user === null || user === void 0 ? void 0 : user.profileImg,
+        userID: user._id,
     };
     const accessToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
     const refreshToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_expires_in);
@@ -76,6 +78,7 @@ const refreshTokenFromDB = (token) => __awaiter(void 0, void 0, void 0, function
         email: user.email,
         role: user.role,
         profileImg: user === null || user === void 0 ? void 0 : user.profileImg,
+        userID: user._id,
     };
     const accessToken = (0, auth_utils_1.default)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
     return { accessToken };
