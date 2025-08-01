@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import catchAsync from '../../../utils/catchAsync';
 import { UserServices } from './user.services';
 import sendResponse from '../../../utils/sendResponse';
+import config from '../../config';
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.getAllUsersFromDB();
@@ -37,13 +38,31 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserServices.updateUserInDB(req.params.userId, req.body);
+  const result = await UserServices.updateUserInDB(
+    req.params.userId,
+    req.file,
+    req.body
+  );
+  // TYPE ERROR (FIX LATER)
+  const { updateUser, accessToken, refreshToken } = result;
+
+  if (refreshToken) {
+    res.cookie('refreshToken', refreshToken, {
+      secure: config.node_env === 'production',
+      httpOnly: true,
+      sameSite: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+    });
+  }
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: 'User updated successfully!',
-    data: result,
+    data: {
+      user: updateUser,
+      ...(accessToken ? { token: accessToken } : {}),
+    },
   });
 });
 

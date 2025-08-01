@@ -60,6 +60,7 @@ const createACar = catchAsync(async (req: Request, res: Response) => {
 const updateACar = catchAsync(async (req: Request, res: Response) => {
   const updatedVal = req.body;
   const { carId } = req.params;
+
   const result = await carServices.updateACarInDB(carId, updatedVal);
 
   // SEND RESPONSE IF THE CAR IS NOT FOUND ON DB

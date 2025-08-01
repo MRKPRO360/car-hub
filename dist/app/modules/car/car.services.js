@@ -64,7 +64,7 @@ const creatACarInDB = (payload, userData) => __awaiter(void 0, void 0, void 0, f
     });
     if (!user)
         throw new AppError_1.default(403, 'User not found');
-    return yield car_model_1.default.create(Object.assign(Object.assign({}, payload), { images: payload.images, coverImage: payload.coverImage, author: user._id }));
+    return yield car_model_1.default.create(Object.assign(Object.assign({}, payload), { author: user._id }));
 });
 const updateACarInDB = (id, updatedVal) => __awaiter(void 0, void 0, void 0, function* () {
     return yield car_model_1.default.findByIdAndUpdate(id, { $set: updatedVal }, 

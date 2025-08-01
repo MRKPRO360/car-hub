@@ -38,6 +38,21 @@ router
 router
     .route('/:carId')
     .get(car_controllers_1.carControllers.getACar)
-    .patch((0, validateRequest_1.default)(car_validation_1.carValidationSchema.updateCarValidationSchema), car_controllers_1.carControllers.updateACar)
+    .patch((0, auth_1.default)(user_constant_1.default.admin), multer_config_1.multerUpload.fields([
+    { name: 'coverImage', maxCount: 1 },
+    { name: 'images', maxCount: 3 },
+]), (req, res, next) => {
+    if (req.body.data) {
+        req.body = JSON.parse(req.body.data);
+    }
+    if (req.files && req.files.coverImage) {
+        req.body.coverImage = req.files.coverImage[0].path;
+    }
+    // PROJECT IMAGES
+    if (req.files && req.files.images) {
+        req.body.images = req.files.images.map((file) => file.path);
+    }
+    next();
+}, (0, validateRequest_1.default)(car_validation_1.carValidationSchema.updateCarValidationSchema), car_controllers_1.carControllers.updateACar)
     .delete(car_controllers_1.carControllers.deleteACar);
 exports.default = router;

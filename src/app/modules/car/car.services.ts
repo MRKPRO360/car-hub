@@ -73,8 +73,6 @@ const creatACarInDB = async (payload: ICar, userData: JwtPayload) => {
 
   return await Car.create({
     ...payload,
-    // images: payload.images,
-    // coverImage: payload.coverImage,
     author: user._id,
   });
 };

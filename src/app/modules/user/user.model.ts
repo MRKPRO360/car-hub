@@ -74,6 +74,10 @@ userSchema.statics.isUserExistsByEmail = async (email: string) => {
   return await User.findOne({ email });
 };
 
+userSchema.statics.isUserExistsByID = async (id: string) => {
+  return await User.findOne({ _id: id });
+};
+
 userSchema.statics.isPasswordMatched = async (
   plainTextPassword: string,
   hashedPassword: string

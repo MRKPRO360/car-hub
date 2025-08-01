@@ -20,15 +20,16 @@ const auth = (...requiredRoles: IUserRoles[]) => {
         token,
         config.jwt_access_secret as string
       ) as JwtPayload;
+      console.log({ decoded });
     } catch (err: any) {
       console.log(err);
 
       throw new AppError(401, 'Token is invalid!');
     }
 
-    const { role, email } = decoded as JwtPayload;
+    const { role, userID } = decoded as JwtPayload;
     //CHECK IF THE USER IS EXISTS
-    const user = await User.isUserExistsByEmail(email);
+    const user = await User.isUserExistsByID(userID);
 
     if (!user) throw new AppError(404, 'This user does not exists!');
 
