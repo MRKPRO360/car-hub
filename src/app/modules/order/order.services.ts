@@ -513,7 +513,11 @@ const getMonthlyTargetFromDB = async () => {
     prevRevenue > 0 ? ((curRevenue - prevRevenue) / prevRevenue) * 100 : 0;
 
   // GENERATE DYNAMIC MESSAGE
-  const generateMessage = (todayRev, growth, isPositive) => {
+  const generateMessage = (
+    todayRev: number,
+    growth: number,
+    isPositive: boolean
+  ) => {
     const formattedToday = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -533,6 +537,24 @@ const getMonthlyTargetFromDB = async () => {
       return `You earned ${formattedToday} today. Keep pushing towards your monthly target!`;
     }
   };
+
+  const isGrowthPositive = growthPercentage > 0;
+
+  return {
+    targetAmount: monthlyTarget,
+    curRevenue: Math.round(curRevenue),
+    todayRevenue: Math.round(todayRevenue),
+    progressPercentage: Math.round(progressPercentage * 100) / 100,
+    growthPercentage: Math.round(Math.abs(growthPercentage)),
+    message: generateMessage(todayRevenue, growthPercentage, isGrowthPositive),
+    additionalStats: {
+      curMonthOrders: curMonthOrders[0]?.totalOrders || 0,
+      remainingAmount: Math.max(0, monthlyTarget - curRevenue, 0),
+      daysInMonth: new Date(curYear, curMonth + 1, 0).getDate(),
+      daysPassed: now.getDate(),
+      averageDailyRevenue: Math.round(curRevenue / now.getDate()),
+    },
+  };
 };
 
 export const orderServices = {
@@ -545,4 +567,5 @@ export const orderServices = {
   verifyPayment,
   getMyOrdersFromDB,
   getMonthlySalesFromDB,
+  getMonthlyTargetFromDB,
 };
