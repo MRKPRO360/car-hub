@@ -2,14 +2,24 @@ import express, { Application, Request, Response } from 'express';
 
 import cors from 'cors';
 import morgan from 'morgan';
+import session from 'express-session';
+import passport from './app/config/passport.config';
 import router from './routes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 
 const app: Application = express();
 
+// BODY PARSER
+app.use(express.json());
+
+app.use(
+  session({ secret: 'keyboard cat', resave: false, saveUninitialized: false })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 // CORS
-//SHOULD HAVE TO CHANGE THE ORIGIN WHEN PRODUCTION!
 app.use(
   cors({
     origin: [
@@ -23,9 +33,6 @@ app.use(
 
 // 3rd PARTY MIDDLEWARE
 app.use(morgan('dev'));
-
-// BODY PARSER
-app.use(express.json());
 
 // ROUTER
 app.use('/api/v1', router);

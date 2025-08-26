@@ -45,10 +45,18 @@ const changePasswordValidationSchema = z.object({
       .min(6, 'Password must be at least 6 characters long'),
   }),
 });
+const googleLoginValidationSchema = z.object({
+  body: z.object({
+    token: z.string({
+      required_error: 'Token is required!',
+    }),
+  }),
+});
 
 export const authValidations = {
   registeredUserValidationSchema,
   loginValidationSchema,
   refreshTokenValidationSchema,
   changePasswordValidationSchema,
+  googleLoginValidationSchema,
 };

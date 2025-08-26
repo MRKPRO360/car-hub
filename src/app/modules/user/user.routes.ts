@@ -10,17 +10,13 @@ const router = express.Router();
 
 router.route('/').get(
   // xxxxxTEMPORALLY COMMENT TO DEBUG
-  // auth(USER_ROLES.admin),
-
+  auth(USER_ROLES.admin),
   UserControllers.getAllUsers
 );
 
-router.route('/me').get(
-  // xxxxxxTEMPORALLY COMMENT TO DEBUG
-  auth(USER_ROLES.admin, USER_ROLES.user),
-
-  UserControllers.getMe
-);
+router
+  .route('/me')
+  .get(auth(USER_ROLES.admin, USER_ROLES.user), UserControllers.getMe);
 router
   .route('/:userId')
   .get(auth(USER_ROLES.admin), UserControllers.getSingleUser)

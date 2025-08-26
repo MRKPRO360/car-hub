@@ -6,6 +6,9 @@ import { ILogin } from './auth.interface';
 import createToken from './auth.utils';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
+
+const client = new OAuth2Client(config.google_Client_Id);
 
 const registerUserInDB = async (file: any, payload: IUser) => {
   // CHECK IF USER EXISTS
@@ -60,6 +63,88 @@ const loginUserFromDB = async (payload: ILogin) => {
   // CHECK IF USER IS DELETED
   if (user.isDeleted) throw new AppError(403, 'User is deleted!');
 
+  const jwtPayload = {
+    email: user.email,
+    role: user.role,
+    profileImg: user?.profileImg,
+    userID: user._id,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as string
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
+
+const googleLoginFromDB = async (token: string) => {
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: config.google_Client_Id,
+  });
+
+  const payload = ticket.getPayload();
+  if (!payload) throw new AppError(400, 'Invalid token!');
+
+  const { sub: googleId, email, name, picture } = payload;
+
+  // Check if user exists
+  if (!email) throw new AppError(404, 'Credential is required!');
+  let user =
+    (await User.findOne({ googleId })) ||
+    (await User.isUserExistsByEmail(email));
+  if (!user) {
+    user = await User.create({
+      googleId,
+      email,
+      name,
+      profileImg: picture,
+    });
+  }
+
+  // CHECK IF USER IS BLOCKED
+  if (user.isBlocked) throw new AppError(403, 'User is blocked!');
+
+  // CHECK IF USER IS DELETED
+  if (user.isDeleted) throw new AppError(403, 'User is deleted!');
+
+  const jwtPayload = {
+    email: user.email,
+    role: user.role,
+    profileImg: user?.profileImg,
+    userID: user._id,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as string
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
+
+const facebookLoginFromDB = async (user: IUser) => {
   const jwtPayload = {
     email: user.email,
     role: user.role,
@@ -164,6 +249,8 @@ const changePasswordInDB = async (
 export const authServices = {
   registerUserInDB,
   loginUserFromDB,
+  googleLoginFromDB,
+  facebookLoginFromDB,
   refreshTokenFromDB,
   changePasswordInDB,
 };

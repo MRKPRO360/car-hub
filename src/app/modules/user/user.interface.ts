@@ -18,6 +18,8 @@ export interface IUser {
   isDeleted?: boolean;
   isPasswordChangedAt?: boolean;
   profileImg?: string;
+  googleId?: string;
+  facebookId?: string;
 }
 
 export interface UserModel extends Model<IUser> {

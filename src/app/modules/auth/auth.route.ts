@@ -5,6 +5,7 @@ import { authControllers } from './auth.controllers';
 import auth from '../../middlewares/auth';
 import USER_ROLES from '../user/user.constant';
 import { multerUpload } from '../../config/multer.config';
+import passport from '../../config/passport.config';
 
 const router = express.Router();
 
@@ -17,6 +18,24 @@ router.route('/register').post(
   validateRequest(authValidations.registeredUserValidationSchema),
   authControllers.registerUser
 );
+
+router
+  .route('/google-login')
+  .post(
+    validateRequest(authValidations.googleLoginValidationSchema),
+    authControllers.googleLogin
+  );
+
+router
+  .route('/facebook')
+  .get(passport.authenticate('facebook', { scope: ['email'] }));
+
+router
+  .route('/facebook/callback')
+  .get(
+    passport.authenticate('facebook', { failureRedirect: '/login' }),
+    authControllers.facebookLogin
+  );
 
 router
   .route('/login')

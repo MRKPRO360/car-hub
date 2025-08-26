@@ -4,6 +4,7 @@ import carRoutes from '../app/modules/car/car.routes';
 import orderRoutes from '../app/modules/order/order.routes';
 import authRoutes from '../app/modules/auth/auth.route';
 import userRoutes from '../app/modules/user/user.routes';
+import monthlyTargetRoutes from '../app/modules/target/target.route';
 
 const router = Router();
 
@@ -23,6 +24,10 @@ const moduleRoutes = [
   {
     path: '/users',
     route: userRoutes,
+  },
+  {
+    path: '/monthly-target',
+    route: monthlyTargetRoutes,
   },
 ];
 

@@ -28,6 +28,30 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllCustomerAndOrders = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await orderServices.getAllCustomerAndOrdersFromDB();
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Orders and customers retrieved successfully!',
+      data: result,
+    });
+  }
+);
+
+const getMonthlySales = catchAsync(async (req: Request, res: Response) => {
+  const result = await orderServices.getMonthlySalesFromDB();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Monthly sales data retrieved successfully!',
+    data: result,
+  });
+});
+
 const getMyOrders = catchAsync(async (req: Request, res: Response) => {
   const result = await orderServices.getMyOrdersFromDB(req.query, req.user!);
 
@@ -89,6 +113,8 @@ const claculateRevenue = catchAsync(async (req: Request, res: Response) => {
 export const orderControllers = {
   getAllOrders,
   getMyOrders,
+  getAllCustomerAndOrders,
+  getMonthlySales,
   createOrder,
   claculateRevenue,
   verifyPayment,

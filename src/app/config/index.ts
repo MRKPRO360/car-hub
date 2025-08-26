@@ -24,4 +24,9 @@ export default {
     sp_prefix: process.env.SP_PREFIX,
     sp_return_url: process.env.SP_RETURN_URL,
   },
+  google_Client_Id: process.env.GOOGLE_CLIENT_ID,
+  google_Client_Secret: process.env.GOOGLE_CLIENT_SECRET,
+  facebook_app_id: process.env.FACEBOOK_APP_ID,
+  facebook_app_secret: process.env.FACEBOOK_APP_SECRET,
+  facebook_callback_url: process.env.FACEBOOK_CALLBACK_URL,
 };

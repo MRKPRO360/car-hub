@@ -22,7 +22,7 @@ router
 
 router
   .route('/my-orders')
-  .get(auth(USER_ROLES.user), orderControllers.getMyOrders);
+  .get(auth(USER_ROLES.user, USER_ROLES.admin), orderControllers.getMyOrders);
 
 router
   .route('/:orderId')
@@ -42,5 +42,13 @@ router
     auth(USER_ROLES.user, USER_ROLES.admin),
     orderControllers.claculateRevenue
   );
+
+router
+  .route('/monthly-sales')
+  .get(auth(USER_ROLES.admin), orderControllers.getMonthlySales);
+
+router
+  .route('/customers')
+  .get(auth(USER_ROLES.admin), orderControllers.getAllCustomerAndOrders);
 
 export default router;

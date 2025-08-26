@@ -16,7 +16,9 @@ const userSchema = new Schema<IUser, UserModel>(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleId && !this.facebookId;
+      },
     },
     role: {
       type: String,
@@ -47,6 +49,8 @@ const userSchema = new Schema<IUser, UserModel>(
     country: {
       type: String,
     },
+    googleId: { type: String, sparse: true },
+    facebookId: { type: String, sparse: true },
   },
   {
     timestamps: true,
@@ -55,6 +59,8 @@ const userSchema = new Schema<IUser, UserModel>(
 
 // HASHING PASSWORD
 userSchema.pre('save', async function (next) {
+  if (!this.password || !this.isModified('password')) return next();
+
   this.password = await bcrypt.hash(
     this.password,
     Number(config.bcrypt_salt_rounds)

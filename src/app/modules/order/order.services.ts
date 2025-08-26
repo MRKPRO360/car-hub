@@ -32,6 +32,72 @@ const getAllOrdersFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
+const getAllCustomerAndOrdersFromDB = async () => {
+  const now = new Date();
+
+  // current month starta and end
+  const curMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const curMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  // prev month starta and end
+  const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevMonthEnd = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    0,
+    23,
+    59,
+    59
+  );
+
+  const curOrders = await Order.find({
+    createdAt: { $gte: curMonthStart, $lte: curMonthEnd },
+  }).lean();
+
+  const prevOrders = await Order.find({
+    createdAt: { $gte: prevMonthStart, $lte: prevMonthEnd },
+  }).lean();
+
+  const curCustomers = await User.find({
+    createdAt: { $gte: curMonthStart, $lte: curMonthEnd },
+  }).lean();
+
+  const prevCustomers = await User.find({
+    createdAt: { $gte: prevMonthStart, $lte: prevMonthEnd },
+  }).lean();
+
+  const calculatePercentageChange = (cur: number, prev: number) => {
+    if (!prev || prev === 0) return 0;
+    return parseFloat((((cur - prev) / prev) * 100).toFixed(2));
+  };
+
+  const customerChange = calculatePercentageChange(
+    curCustomers.length,
+    prevCustomers.length
+  );
+  const orderChange = calculatePercentageChange(
+    curOrders.length,
+    prevOrders.length
+  );
+
+  return {
+    cur: {
+      orders: curOrders,
+      customers: curCustomers,
+    },
+    prev: {
+      orders: prevOrders,
+      customers: prevCustomers,
+    },
+    analytics: {
+      customerChange,
+      orderChange,
+      customerGrowth: customerChange >= 0 ? 'positive' : 'negative',
+      orderGrowth: orderChange >= 0 ? 'positive' : 'negative',
+    },
+  };
+};
+
 const getMyOrdersFromDB = async (
   query: Record<string, unknown>,
   userData: JwtPayload
@@ -282,12 +348,201 @@ const claculateRevenueFromDB = async () => {
   ]).exec();
 };
 
+const getMonthlySalesFromDB = async () => {
+  const curYear = new Date().getFullYear();
+
+  // GROUPING ORDERS BY MONTH
+  const monthlySales = await Order.aggregate([
+    // staget 1
+    {
+      $match: {
+        createdAt: {
+          $gte: new Date(`${curYear}-01-01`),
+          $lte: new Date(`${curYear}-12-31`),
+        },
+      },
+    },
+    // stage 2
+    {
+      $group: {
+        _id: {
+          $month: '$createdAt',
+        },
+        totalSales: { $sum: 1 },
+        totalRevenue: { $sum: '$totalAmount' },
+        totalQuantity: { $sum: '$quantity' },
+      },
+    },
+    //stage-3
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const completeYearData = monthNames.map((month, index) => {
+    const monthData = monthlySales.find((item) => item._id === index + 1);
+
+    return {
+      month,
+      sales: monthData ? monthData.totalSales : 0,
+      revenue: monthData ? monthData.totalRevenue : 0,
+      quantity: monthData ? monthData.totalQuantity : 0,
+    };
+  });
+
+  return completeYearData;
+};
+
+const getMonthlyTargetFromDB = async () => {
+  const now = new Date();
+  const curYear = now.getFullYear();
+  const curMonth = now.getMonth();
+
+  const curMonthStart = new Date(curYear, curMonth, 1);
+  const curMonthEnd = new Date(curYear, curMonth + 1, 0, 23, 59, 59);
+
+  const prevMonthStart = new Date(curYear, curMonth - 1, 1);
+  const prevMonthEnd = new Date(curYear, curMonth, 0, 23, 59, 59);
+
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayEnd = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    23,
+    59,
+    59
+  );
+
+  // GET CURRENT MONTH REVENUE
+  const curMonthOrders = await Order.aggregate([
+    // 1st stage
+    {
+      $match: {
+        createdAt: {
+          $gte: curMonthStart,
+          $lte: curMonthEnd,
+        },
+        status: 'COMPLETED',
+      },
+    },
+
+    // 2nd stage
+    {
+      $group: {
+        _id: null,
+        totalRevenue: { $sum: '$totalAmount' },
+        totalOrders: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // GET PREVIOUS MONT REVENUE
+
+  const prevMonthOrders = await Order.aggregate([
+    // 1st stage
+    {
+      $match: {
+        createdAt: {
+          $gte: prevMonthStart,
+          $lte: prevMonthEnd,
+        },
+        status: 'COMPLETED',
+      },
+    },
+
+    // 2nd stage
+    {
+      $group: {
+        _id: null,
+        totalRevenue: { $sum: '$totalAmount' },
+      },
+    },
+  ]);
+
+  // GET TODAYS REVENUE
+
+  const toadaysOrders = await Order.aggregate([
+    // 1st stage
+    {
+      $match: {
+        createdAt: {
+          $gte: todayStart,
+          $lte: todayEnd,
+        },
+      },
+    },
+
+    // 2nd stage
+    {
+      $group: {
+        _id: null,
+        totalRevnue: { $sum: '$totalAmount' },
+      },
+    },
+  ]);
+
+  const monthlyTarget = 200000; // hardcoded value
+
+  // EXTRACT VALUES
+  const curRevenue = curMonthOrders[0]?.totalRevenue || 0;
+  const prevRevenue = prevMonthOrders[0]?.totalRevenue || 0;
+  const todayRevenue = toadaysOrders[0]?.totalRevnue || 0;
+
+  // CALCULATE PROGRESS PERCENTAGE
+  const progressPercentage =
+    monthlyTarget > 0 ? Math.min((curRevenue / monthlyTarget) * 100, 100) : 0;
+
+  // CALCULATE MONTH-OVER-MONTH GROWTH
+  const growthPercentage =
+    prevRevenue > 0 ? ((curRevenue - prevRevenue) / prevRevenue) * 100 : 0;
+
+  // GENERATE DYNAMIC MESSAGE
+  const generateMessage = (todayRev, growth, isPositive) => {
+    const formattedToday = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(todayRev);
+
+    if (isPositive) {
+      return `You earned ${formattedToday} today, it's ${Math.abs(
+        growth
+      ).toFixed(1)}% higher than last month. Keep your good work`;
+    } else if (growth < 0) {
+      return `You earned ${formattedToday} today, it's ${Math.abs(
+        growth
+      ).toFixed(1)}% lower than last month. Let's work harder!`;
+    } else {
+      return `You earned ${formattedToday} today. Keep pushing towards your monthly target!`;
+    }
+  };
+};
+
 export const orderServices = {
   getAllOrdersFromDB,
+  getAllCustomerAndOrdersFromDB,
   createOrderInDB,
   deleteAnOrder,
   updateAnOrder,
   claculateRevenueFromDB,
   verifyPayment,
   getMyOrdersFromDB,
+  getMonthlySalesFromDB,
 };
