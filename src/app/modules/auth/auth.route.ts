@@ -30,12 +30,13 @@ router
   .route('/facebook')
   .get(passport.authenticate('facebook', { scope: ['email'] }));
 
-router
-  .route('/facebook/callback')
-  .get(
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
-    authControllers.facebookLogin
-  );
+router.route('/facebook/callback').get(
+  passport.authenticate('facebook', {
+    failureRedirect:
+      'https://car-frontend-azure.vercel.app/login?error=facebook_auth_failed',
+  }),
+  authControllers.facebookLogin
+);
 
 router
   .route('/login')

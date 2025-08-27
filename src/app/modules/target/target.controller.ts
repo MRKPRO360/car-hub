@@ -13,8 +13,9 @@ const createMonthlyTarget = catchAsync(async (req, res) => {
   });
 });
 
-const getMonthlyTarget = catchAsync(async (req, res) => {
-  const result = await MonthlyTargetService.getMonthlyTargetFromDB(req.body);
+const getMonthlyTargetByYearAndMonth = catchAsync(async (req, res) => {
+  const result =
+    await MonthlyTargetService.getMonthlyTargetByYearAndMonthFromDB(req.body);
 
   sendResponse(res, {
     statusCode: 200,
@@ -43,6 +44,6 @@ const updateMonthlyTarget = catchAsync(async (req, res) => {
 
 export const TargetControllers = {
   updateMonthlyTarget,
-  getMonthlyTarget,
+  getMonthlyTargetByYearAndMonth,
   createMonthlyTarget,
 };

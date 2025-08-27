@@ -546,6 +546,7 @@ const getMonthlyTargetFromDB = async () => {
     todayRevenue: Math.round(todayRevenue),
     progressPercentage: Math.round(progressPercentage * 100) / 100,
     growthPercentage: Math.round(Math.abs(growthPercentage)),
+    isGrowthPositive,
     message: generateMessage(todayRevenue, growthPercentage, isGrowthPositive),
     additionalStats: {
       curMonthOrders: curMonthOrders[0]?.totalOrders || 0,

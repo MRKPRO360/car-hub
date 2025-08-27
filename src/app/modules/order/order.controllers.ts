@@ -52,6 +52,17 @@ const getMonthlySales = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMonthlyTarget = catchAsync(async (req: Request, res: Response) => {
+  const result = await orderServices.getMonthlyTargetFromDB();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Monthly target data retrieved successfully!',
+    data: result,
+  });
+});
+
 const getMyOrders = catchAsync(async (req: Request, res: Response) => {
   const result = await orderServices.getMyOrdersFromDB(req.query, req.user!);
 
@@ -115,6 +126,7 @@ export const orderControllers = {
   getMyOrders,
   getAllCustomerAndOrders,
   getMonthlySales,
+  getMonthlyTarget,
   createOrder,
   claculateRevenue,
   verifyPayment,

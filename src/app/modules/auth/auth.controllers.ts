@@ -57,7 +57,7 @@ const googleLogin = catchAsync(async (req, res) => {
   const { refreshToken, accessToken } = result;
 
   res.cookie('refreshToken', refreshToken, {
-    secure: config.node_env === 'prdoduction',
+    secure: config.node_env === 'production',
     httpOnly: true,
     sameSite: true,
     maxAge: 1000 * 60 * 60 * 24 * 365,
@@ -81,14 +81,14 @@ const facebookLogin = catchAsync(async (req, res) => {
   const { refreshToken, accessToken } = result;
 
   res.cookie('refreshToken', refreshToken, {
-    secure: config.node_env === 'prdoduction',
+    secure: config.node_env === 'production',
     httpOnly: true,
     sameSite: true,
     maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
   // Redirect to frontend with access token
-  const frontendURL = `http://localhost:5173/fblogin-success?token=${accessToken}`;
+  const frontendURL = `https://car-frontend-azure.vercel.app/fblogin-success?token=${accessToken}`;
 
   res.redirect(frontendURL);
 });

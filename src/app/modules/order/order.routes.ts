@@ -47,6 +47,11 @@ router
   .route('/monthly-sales')
   .get(auth(USER_ROLES.admin), orderControllers.getMonthlySales);
 
+router.route('/monthly-target').get(
+  // auth(USER_ROLES.admin),
+  orderControllers.getMonthlyTarget
+);
+
 router
   .route('/customers')
   .get(auth(USER_ROLES.admin), orderControllers.getAllCustomerAndOrders);

@@ -7,6 +7,7 @@ import passport from './app/config/passport.config';
 import router from './routes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
+import config from './app/config';
 
 const app: Application = express();
 
@@ -14,7 +15,11 @@ const app: Application = express();
 app.use(express.json());
 
 app.use(
-  session({ secret: 'keyboard cat', resave: false, saveUninitialized: false })
+  session({
+    secret: config.jwt_access_secret || 'your-super-secret-key',
+    resave: false,
+    saveUninitialized: false,
+  })
 );
 app.use(passport.initialize());
 app.use(passport.session());

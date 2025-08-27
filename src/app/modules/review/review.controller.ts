@@ -22,19 +22,17 @@ import sendResponse from '../../../utils/sendResponse';
 // );
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.user!;
-
-  const result = await ReviewServices.createReviewInDB({
-    userId: id,
-    ...req.body,
-  });
-
-  sendResponse(res, {
-    statusCode: 201,
-    success: true,
-    message: 'Review submitted successfully',
-    data: result,
-  });
+  // const { id } = req.user!;
+  // const result = await ReviewServices.createReviewInDB({
+  //   userId: id,
+  //   ...req.body,
+  // });
+  // sendResponse(res, {
+  //   statusCode: 201,
+  //   success: true,
+  //   message: 'Review submitted successfully',
+  //   data: result,
+  // });
 });
 
 const getAllCarReviews = catchAsync(async (req: Request, res: Response) => {

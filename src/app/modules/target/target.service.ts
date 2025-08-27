@@ -14,7 +14,7 @@ const createMonthlyTargetInDB = async (payload: {
   });
 };
 
-const getMonthlyTargetFromDB = async (payload: {
+const getMonthlyTargetByYearAndMonthFromDB = async (payload: {
   year: number;
   month: number;
 }) => {
@@ -49,7 +49,7 @@ const updateMonthlyTargetInDB = async (
 };
 
 export const MonthlyTargetService = {
-  getMonthlyTargetFromDB,
+  getMonthlyTargetByYearAndMonthFromDB,
   updateMonthlyTargetInDB,
   createMonthlyTargetInDB,
 };
