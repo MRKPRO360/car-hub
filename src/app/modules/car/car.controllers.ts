@@ -4,9 +4,7 @@ import catchAsync from '../../../utils/catchAsync';
 import sendResponse from '../../../utils/sendResponse';
 
 const getAllCars = catchAsync(async (req: Request, res: Response) => {
-  const { query } = req;
-
-  const result = await carServices.getAllCarsFromDB(query);
+  const result = await carServices.getAllCarsFromDB(req.query);
 
   sendResponse(res, {
     statusCode: 200,
@@ -16,11 +14,21 @@ const getAllCars = catchAsync(async (req: Request, res: Response) => {
     meta: result.meta,
   });
 });
-const getMyCars = catchAsync(async (req: Request, res: Response) => {
-  const { query } = req;
-  const user = req.user;
 
-  const result = await carServices.getMyCarsFromDB(query, user!);
+const getAllCarsModelsByBrand = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await carServices.getAllCarsModelsByBrandFromDB(req.query);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Car modles retrieved successfully!',
+      data: result,
+    });
+  }
+);
+const getMyCars = catchAsync(async (req: Request, res: Response) => {
+  const result = await carServices.getMyCarsFromDB(req.query, req.user!);
 
   sendResponse(res, {
     statusCode: 200,
@@ -91,6 +99,7 @@ const deleteACar = catchAsync(async (req: Request, res: Response) => {
 
 export const carControllers = {
   getAllCars,
+  getAllCarsModelsByBrand,
   getACar,
   getMyCars,
   updateACar,

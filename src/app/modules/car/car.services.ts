@@ -8,7 +8,11 @@ import AppError from '../../errors/AppError';
 
 const getAllCarsFromDB = async (query: Record<string, unknown>) => {
   const carsQuery = new QueryBuilder(
-    Car.find().populate({ path: 'author', model: 'User' }),
+    Car.find().populate({
+      path: 'author',
+      model: 'User',
+      select: '-password -isPasswordChangedAt -role -isBlocked -isDeleted',
+    }),
     query
   )
     .search(carSearchableFileds)
@@ -24,6 +28,16 @@ const getAllCarsFromDB = async (query: Record<string, unknown>) => {
     meta,
     result,
   };
+};
+
+const getAllCarsModelsByBrandFromDB = async (
+  query: Record<string, unknown>
+) => {
+  const queryStr: any = {};
+
+  if (query.brand) queryStr.brand = query.brand;
+
+  return await Car.find(queryStr).select('_id model brand').lean();
 };
 
 const getMyCarsFromDB = async (
@@ -102,4 +116,5 @@ export const carServices = {
   updateACarInDB,
   deleteACarFromDB,
   getMyCarsFromDB,
+  getAllCarsModelsByBrandFromDB,
 };

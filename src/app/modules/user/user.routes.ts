@@ -15,6 +15,10 @@ router.route('/').get(
 );
 
 router
+  .route('/by-country')
+  .get(auth(USER_ROLES.admin), UserControllers.getAllUsersByCountry);
+
+router
   .route('/me')
   .get(auth(USER_ROLES.admin, USER_ROLES.user), UserControllers.getMe);
 router

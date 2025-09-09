@@ -8,6 +8,33 @@ import config from '../../config';
 const getAllUsersFromDB = async () => {
   return await User.find({ role: { $ne: 'admin' } });
 };
+
+const getAllUsersByCountryFromDB = async () => {
+  return await User.aggregate([
+    {
+      $match: {
+        role: { $ne: 'admin' },
+        country: { $exists: true, $ne: { $or: [null, ''] } },
+      },
+    },
+    {
+      $group: {
+        _id: '$country',
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { count: -1 },
+    },
+    {
+      $project: {
+        country: '$_id',
+        customerCount: '$count',
+        _id: 0,
+      },
+    },
+  ]);
+};
 const getSingleUserFromDB = async (id: string) => {
   return await User.findById(id);
 };
@@ -23,20 +50,18 @@ const updateUserInDB = async (
 ) => {
   const user = await User.findById(id);
 
-  if (!user) throw new AppError(400, 'User not found!');
-
   // DETERMINING IF TOKEN SENSITIVE FIELDS ARE CHANGED
   const tokenSesnitiveFields = ['email', 'role', 'profileImg'];
 
   const shouldUpdateToken = tokenSesnitiveFields.some(
     (field) =>
       payload[field as keyof IUser] !== undefined &&
-      payload[field as keyof IUser] !== user[field as keyof IUser]
+      payload[field as keyof IUser] !== user?.[field as keyof IUser]
   );
 
   const updateUser = await User.findByIdAndUpdate(
     id,
-    { profileImg: file?.path || user.profileImg, ...payload },
+    { profileImg: file?.path || user?.profileImg, ...payload },
     {
       new: true,
       runValidators: true,
@@ -45,7 +70,7 @@ const updateUserInDB = async (
 
   let accessToken, refreshToken;
 
-  if (shouldUpdateToken && updateUser) {
+  if ((file && updateUser) || (shouldUpdateToken && updateUser)) {
     const jwtPayload = {
       email: updateUser.email,
       role: updateUser.role,
@@ -129,6 +154,7 @@ const deleteUserFromDB = async (id: string) => {
 
 export const UserServices = {
   getAllUsersFromDB,
+  getAllUsersByCountryFromDB,
   updateUserInDB,
   deleteUserFromDB,
   deactivateUserInDB,

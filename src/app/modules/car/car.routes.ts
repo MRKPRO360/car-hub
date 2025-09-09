@@ -39,6 +39,7 @@ router
     carControllers.createACar
   );
 
+router.route('/models').get(carControllers.getAllCarsModelsByBrand);
 router
   .route('/my-car')
   .get(auth(USER_ROLES.admin, USER_ROLES.user), carControllers.getMyCars);

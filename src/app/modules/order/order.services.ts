@@ -17,7 +17,7 @@ const getAllOrdersFromDB = async (query: Record<string, unknown>) => {
     }),
     query
   )
-    .search(['name', 'email', 'status'])
+    .search(['user.name', 'user.email', 'status'])
     .filter()
     .sort()
     .paginate()

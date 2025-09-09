@@ -15,6 +15,17 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllUsersByCountry = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.getAllUsersByCountryFromDB();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Users with country name retrieved successfully!',
+    data: result,
+  });
+});
+
 const getMe = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.getMeFromDB(req.user!);
 
@@ -101,6 +112,7 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
 
 export const UserControllers = {
   getAllUsers,
+  getAllUsersByCountry,
   getSingleUser,
   updateUser,
   deleteUser,

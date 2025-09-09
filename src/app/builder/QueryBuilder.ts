@@ -39,6 +39,10 @@ class QueryBuilder<T> {
       }
     }
 
+    if (queryObj.status && typeof queryObj.status === 'string') {
+      queryObj.status = queryObj.status.toUpperCase();
+    }
+
     // Filtering
     const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
 
